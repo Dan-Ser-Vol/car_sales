@@ -23,7 +23,7 @@ export class AuthService {
     public readonly roleService: RolesService,
   ) {}
 
-  async register(@Body() data: CreateUserDto): Promise<string> {
+  async register(@Body() data: CreateUserDto): Promise<void> {
     const candidate = await this.getByEmail(data.email);
     if (candidate) {
       throw new HttpException(
@@ -39,16 +39,18 @@ export class AuthService {
     });
     await this.userRepository.save(user);
 
-    const role = await this.roleService.getByValue('USER');
+    const role = await this.roleService.getByValue('ADMIN');
     user.roles = [role];
     await this.userRepository.save(user);
-
-    return this.singIn({ id: +user.id, email: user.email });
   }
 
   async login(data: CreateUserDto) {
     const user = await this.validateUser(data);
-    return this.singIn({ id: Number(user.id), email: user.email });
+    return this.singIn({
+      id: Number(user.id),
+      email: user.email,
+      roles: user.roles,
+    });
   }
 
   async singIn(payload: EJwtPayload): Promise<string> {

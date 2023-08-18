@@ -33,6 +33,6 @@ import { AuthController } from './auth.controller';
   ],
   controllers: [AuthController],
   providers: [AuthService, BearerStrategy],
-  exports: [PassportModule, AuthService],
+  exports: [PassportModule, AuthService, JwtModule],
 })
 export class AuthModule {}
