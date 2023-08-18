@@ -2,53 +2,73 @@ import {
   Column,
   Entity,
   PrimaryGeneratedColumn,
-  BeforeInsert,
   CreateDateColumn,
   UpdateDateColumn,
   OneToOne,
-  OneToMany,
+  ManyToMany,
   JoinColumn,
+  JoinTable,
 } from 'typeorm';
-import * as bcrypt from 'bcrypt';
 import { Account } from '../accounts/account.entity';
 import { Role } from '../roles/role.entity';
+import { ApiProperty } from '@nestjs/swagger';
 
 @Entity()
 export class User {
+  @ApiProperty({ example: 1, description: 'Unique ID of the user' })
   @PrimaryGeneratedColumn()
   id: number;
 
+  @ApiProperty({ example: 'John', description: 'Name of the user' })
   @Column({ type: 'varchar', nullable: false })
   name: string;
 
+  @ApiProperty({
+    example: 'john@example.com',
+    description: 'Email address of the user',
+  })
   @Column({ type: 'varchar', nullable: false, unique: true })
   email: string;
 
-  @Column({ type: 'varchar', nullable: false, unique: true })
+  @ApiProperty({ example: 'MyP@ssw0rd!', description: 'Password of the user' })
+  @Column({ type: 'varchar', nullable: false })
   password: string;
 
-  @BeforeInsert()
-  async hashPassword() {
-    this.password = await bcrypt.hash(this.password, 10);
-  }
-
+  @ApiProperty({
+    example: true,
+    description: 'Indicates if the user is active',
+  })
   @Column({ type: 'boolean', default: false })
   isActive: boolean;
 
+  @ApiProperty({
+    example: false,
+    description: 'Indicates if the user is banned',
+  })
   @Column({ type: 'boolean', default: false })
   banned: boolean;
 
+  @ApiProperty({
+    type: () => Account,
+    description: 'Associated account of the user',
+  })
   @OneToOne(() => Account)
-  @JoinColumn()
+  @JoinColumn({ name: 'user_id' })
   account: Account;
 
-  @OneToMany(() => Role, (role) => role.user, { onDelete: 'CASCADE' })
-  @JoinColumn()
-  roles: Role[];
-
+  @ApiProperty({
+    type: () => Role,
+    isArray: true,
+    description: 'Roles assigned to the user',
+  })
+  @ApiProperty({ description: 'Date when the user was created' })
   @CreateDateColumn()
   createdAt: Date;
 
+  @ApiProperty({ description: 'Date when the user was last updated' })
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @ManyToMany(() => Role, (role) => role.users)
+  roles: Role[];
 }
