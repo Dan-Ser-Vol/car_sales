@@ -6,9 +6,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthService } from './auth.service';
 import { BearerStrategy } from './bearer.strategy';
 import { User } from '../users/user.entity';
+import { RolesModule } from '../roles/roles.module';
+import { AuthController } from './auth.controller';
 
 @Module({
   imports: [
+    RolesModule,
     PassportModule.register({
       defaultStrategy: 'bearer',
       property: 'user',
@@ -28,6 +31,7 @@ import { User } from '../users/user.entity';
       }),
     }),
   ],
+  controllers: [AuthController],
   providers: [AuthService, BearerStrategy],
   exports: [PassportModule, AuthService],
 })
