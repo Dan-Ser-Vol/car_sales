@@ -46,8 +46,22 @@ export class AuthService {
     return this.singIn({ id: +user.id, email: user.email });
   }
 
+  async login(data: CreateUserDto) {
+    const user = await this.validateUser(data);
+    return this.singIn({ id: Number(user.id), email: user.email });
+  }
+
   async singIn(payload: EJwtPayload): Promise<string> {
     return this.jwtService.sign(payload);
+  }
+
+  private async validateUser(data: CreateUserDto) {
+    const user = await this.getByEmail(data.email);
+    const isMatch = await bcrypt.compare(data.password, user.password);
+    if (user && isMatch) {
+      return user;
+    }
+    throw new UnauthorizedException('Incorrect password or email');
   }
 
   async validate(data: EJwtPayload): Promise<User> {
@@ -62,7 +76,7 @@ export class AuthService {
     return user;
   }
 
-  async verify(token: string): Promise<EJwtPayload> {
+  private async verifyToken(token: string): Promise<EJwtPayload> {
     try {
       return this.jwtService.verify(token);
     } catch (e) {

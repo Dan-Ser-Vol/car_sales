@@ -16,4 +16,11 @@ export class AuthController {
   async register(@Body() data: CreateUserDto) {
     return await this.authService.register(data);
   }
+
+  @ApiOperation({ summary: 'Login user' })
+  @ApiResponse({ status: 200, type: User })
+  @Post('login')
+  async login(@Body() data: CreateUserDto) {
+    return await this.authService.login(data);
+  }
 }
