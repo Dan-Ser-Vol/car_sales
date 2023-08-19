@@ -1,9 +1,10 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, UsePipes } from '@nestjs/common';
 
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { User } from '../users/user.entity';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from '../users/dto/user.dto';
+import {ValidationPipe} from "../pipes/validation.pipe";
 
 @ApiTags('auth')
 @Controller('/auth')
@@ -12,6 +13,7 @@ export class AuthController {
 
   @ApiOperation({ summary: 'Register user' })
   @ApiResponse({ status: 200, type: User })
+  @UsePipes(ValidationPipe)
   @Post('register')
   async register(@Body() data: CreateUserDto) {
     return await this.authService.register(data);

@@ -2,9 +2,9 @@ import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
 import * as dotenv from 'dotenv';
 import * as process from 'process';
+import { ValidationPipe } from './pipes/validation.pipe';
 
 const environment = process.env.NODE_ENV ?? '';
 
