@@ -48,12 +48,14 @@ export class User {
   @Column({ type: 'boolean', default: false })
   banned: boolean;
 
+  @Column({ type: 'varchar', nullable: true })
+  banReason: string;
+
   @ApiProperty({
     type: () => Account,
     description: 'Associated account of the user',
   })
   @OneToOne(() => Account)
-  @JoinColumn({ name: 'user_id' })
   account: Account;
 
   @ApiProperty({

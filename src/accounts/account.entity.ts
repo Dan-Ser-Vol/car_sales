@@ -14,7 +14,7 @@ export class Account {
 
   @Column({ type: 'boolean', default: false })
   isPremium: boolean;
-  @JoinColumn({ name: 'user_id' })
+  @JoinColumn({ name: 'userId' })
   @OneToOne(() => User)
   user: User;
 }
