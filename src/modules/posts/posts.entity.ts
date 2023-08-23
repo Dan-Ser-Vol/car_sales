@@ -1,0 +1,35 @@
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
+import { ApiProperty } from '@nestjs/swagger';
+import { User } from '../users/user.entity';
+
+@Entity('posts')
+export class Post {
+  @PrimaryGeneratedColumn()
+  @ApiProperty({ example: 1, description: 'The ID of the post' })
+  id: number;
+
+  @Column({ nullable: false })
+  @ApiProperty({ example: 'Title', description: 'The title of the post' })
+  title: string;
+
+  @Column({ nullable: false })
+  @ApiProperty({ example: 'Content', description: 'The content of the post' })
+  content: string;
+
+  @Column()
+  @ApiProperty({
+    example: 'image-url',
+    description: 'The URL of the image associated with the post',
+  })
+  image: string;
+
+  @ManyToOne(() => User, (user) => user.posts)
+  @JoinColumn()
+  author: User;
+}

@@ -3,8 +3,8 @@ import { Body, Controller, Post, UsePipes } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { User } from '../users/user.entity';
 import { AuthService } from './auth.service';
-import { CreateUserDto } from '../users/dto/user.dto';
-import {ValidationPipe} from "../pipes/validation.pipe";
+import { CreateLoginSocialDto, CreateUserDto } from '../users/dto/user.dto';
+import { ValidationPipe } from '../../pipes/validation.pipe';
 
 @ApiTags('auth')
 @Controller('/auth')
@@ -24,5 +24,12 @@ export class AuthController {
   @Post('login')
   async login(@Body() data: CreateUserDto) {
     return await this.authService.login(data);
+  }
+
+  @ApiOperation({ summary: 'Login social user' })
+  @ApiResponse({ status: 200, type: User })
+  @Post('login/social')
+  async loginSocial(@Body() data: CreateLoginSocialDto) {
+    return await this.authService.loginSocial(data);
   }
 }

@@ -4,9 +4,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Car } from './car.entity';
 import { CreateCarDto, PublicCarData } from './dto/car.dto';
-import { CarQueryDto } from '../common/query/car.query.dto';
+import { CarQueryDto } from '../../common/query/car.query.dto';
 import { paginateRawAndEntities } from 'nestjs-typeorm-paginate';
-import { PaginatedDto } from '../common/pagination/response';
+import { PaginatedDto } from '../../common/pagination/response';
 
 @Injectable()
 export class CarService {

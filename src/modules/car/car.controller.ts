@@ -3,8 +3,8 @@ import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { CreateCarDto, PublicCarData } from './dto/car.dto';
 import { CarService } from './car.service';
 import { ApiExtraModels, ApiTags } from '@nestjs/swagger';
-import { CarQueryDto } from '../common/query/car.query.dto';
-import {ApiPaginatedResponse, PaginatedDto} from '../common/pagination/response';
+import { CarQueryDto } from '../../common/query/car.query.dto';
+import {ApiPaginatedResponse, PaginatedDto} from '../../common/pagination/response';
 
 // @UseGuards(AuthGuard('bearer'))
 @ApiTags('cars')
