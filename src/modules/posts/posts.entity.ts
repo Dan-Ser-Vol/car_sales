@@ -2,11 +2,10 @@ import {
   Entity,
   Column,
   PrimaryGeneratedColumn,
-  ManyToOne,
-  JoinColumn,
+
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
-import { User } from '../users/user.entity';
+// import { User } from '../users/user.entity';
 
 @Entity('posts')
 export class Post {
@@ -28,8 +27,4 @@ export class Post {
     description: 'The URL of the image associated with the post',
   })
   image: string;
-
-  @ManyToOne(() => User, (user) => user.posts)
-  @JoinColumn()
-  author: User;
 }

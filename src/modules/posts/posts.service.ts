@@ -8,7 +8,7 @@ import { PostResponseDto } from './dto/post-response.dto';
 import { FileService } from '../file/file.service';
 import { CreatePostRequestDto } from './dto/create-post.dto';
 import { UpdatePostRequestDto } from './dto/post-update-request.dto';
-import {UserService} from "../users/user.service";
+import { UserService } from '../users/user.service';
 
 @Injectable()
 export class PostsService {
@@ -19,27 +19,10 @@ export class PostsService {
     private readonly userService: UserService,
   ) {}
 
-  async getAllPosts(data): Promise<Post[]> {
-    return await this.postRepository.find(data);
-  }
-
-  async createPost(
-    data: CreatePostRequestDto,
-    image: any,
-  ): Promise<PostResponseDto> {
+  async createPost(data, image: any) {
     const fileName = await this.fileService.createFile(image);
-    // const author = await this.userService.findUserById({
-    //   where: { id: data.authorId },
-    // });
-    // if (!author) {
-    //   throw new HttpException('User not found', HttpStatus.NOT_FOUND);
-    // }
-    const post = await this.postRepository.create({
-      ...data,
-      image: fileName,
-    });
 
-    return await this.postRepository.save(post);
+    return { fileName };
   }
   //
   // async updatePost(

@@ -11,7 +11,7 @@ import {
 import { Account } from '../accounts/account.entity';
 import { Role } from '../roles/role.entity';
 import { ApiProperty } from '@nestjs/swagger';
-import { Post } from '../posts/posts.entity';
+import { CarPost } from '../carPost/carPost.entity';
 
 @Entity()
 export class User {
@@ -74,6 +74,6 @@ export class User {
   @ManyToMany(() => Role, (role) => role.users)
   roles: Role[];
 
-  @OneToMany(() => Post, (post) => post.author)
-  posts: Post[];
+  @OneToMany(() => CarPost, (post) => post.user)
+  posts: CarPost[];
 }

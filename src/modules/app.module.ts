@@ -8,7 +8,7 @@ import { UserModule } from './users/user.module';
 import { AuthModule } from './auth/auth.module';
 import { RolesModule } from './roles/roles.module';
 import { AccountsModule } from './accounts/accounts.module';
-import { CarModule } from './car/car.module';
+import { CarPostModule } from './carPost/carPost.module';
 import { PostsModule } from './posts/posts.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 
@@ -22,7 +22,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
     AuthModule,
     RolesModule,
     AccountsModule,
-    CarModule,
+    CarPostModule,
     PostsModule,
   ],
   controllers: [AppController],

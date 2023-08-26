@@ -19,15 +19,19 @@ export class UserService {
       relations: ['roles'],
     });
   }
-  //
-  // async findUserById(data) {
-  //   return await this.userRepository.findOne({
-  //     where: {
-  //       id: +data.id,
-  //     },
-  //     relations: { roles: true, cars: true, posts: true },
-  //   });
-  // }
+
+  async findUserById(userId: number) {
+    const user = await this.userRepository.findOne({
+      where: {
+        id: userId,
+      },
+      relations: ['roles', 'posts'],
+    });
+    if (!user) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+    return user;
+  }
 
   async addRole(data: AddRoleDto): Promise<AddRoleDto> {
     const user = await this.userRepository.findOne({

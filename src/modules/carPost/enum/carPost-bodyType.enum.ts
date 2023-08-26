@@ -1,0 +1,15 @@
+export enum CarPostBodyTypeEnum {
+  SEDAN = 'Sedan',
+  COUPE = 'Coupe',
+  HATCHBACK = 'Hatchback',
+  ESTATE_WAGON = 'Estate/Wagon',
+  CONVERTIBLE = 'Convertible',
+  ROADSTER = 'Roadster',
+  MINIVAN = 'Minivan',
+  CROSSOVER = 'Crossover',
+  SUV = 'Sport Utility Vehicle',
+  MPV = 'Multi-Purpose Vehicle',
+  SPORT_CAR = 'Sports Car',
+  LIMOUSINE = 'Limousine',
+  PICKUP = 'Pickup',
+}

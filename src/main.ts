@@ -15,10 +15,9 @@ const PORT = process.env.PORT || 5000;
 async function start() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe());
-
   const config = new DocumentBuilder()
     .setTitle('Car Sales Platform API')
-    .setDescription('API for managing car sales on our platform.')
+    .setDescription('API for managing carPost sales on our platform.')
     .setVersion('1.0')
     .build();
   const document = SwaggerModule.createDocument(app, config);
