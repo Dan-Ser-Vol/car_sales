@@ -1,7 +1,5 @@
 import { Module } from '@nestjs/common';
 import * as path from 'path';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { TypeOrmConfiguration } from '../config/database/type-orm-configuration';
 import { UserModule } from './users/user.module';
@@ -11,6 +9,9 @@ import { AccountsModule } from './accounts/accounts.module';
 import { CarPostModule } from './carPost/carPost.module';
 import { PostsModule } from './posts/posts.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { JwtModule } from '@nestjs/jwt';
+import { PassportModule } from '@nestjs/passport';
+
 
 @Module({
   imports: [
@@ -24,8 +25,8 @@ import { ServeStaticModule } from '@nestjs/serve-static';
     AccountsModule,
     CarPostModule,
     PostsModule,
+    PassportModule,
+    JwtModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
 })
 export class AppModule {}

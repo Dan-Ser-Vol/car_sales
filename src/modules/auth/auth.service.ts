@@ -4,7 +4,6 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
 import { Repository } from 'typeorm';
 import { User } from '../users/user.entity';
 import { EJwtPayload } from './interfaces/auth.interface';
@@ -14,6 +13,8 @@ import * as bcrypt from 'bcrypt';
 import { RolesService } from '../roles/roles.service';
 import { OAuth2Client } from 'google-auth-library';
 import { IToken } from './interfaces/token.interface';
+import { JwtService } from '@nestjs/jwt';
+import { InjectRedisClient, RedisClient } from '@webeleon/nestjs-redis';
 
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '';
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET || '';
@@ -21,10 +22,11 @@ const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET || '';
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly jwtService: JwtService,
     @InjectRepository(User)
     public readonly userRepository: Repository<User>,
     public readonly roleService: RolesService,
+    private readonly jwtService: JwtService,
+    @InjectRedisClient() private redisClient: RedisClient,
   ) {}
 
   async register(data: CreateUserDto): Promise<User> {
@@ -36,7 +38,7 @@ export class AuthService {
       );
     }
 
-    const hashPassword = await bcrypt.hash(data.password, 5);
+    const hashPassword = await this.getHash(data.password);
     const user = this.userRepository.create({
       ...data,
       password: hashPassword,
@@ -74,19 +76,17 @@ export class AuthService {
     }
   }
 
-  singIn(payload: EJwtPayload): string {
-    return this.jwtService.sign(payload);
-  }
-
   private async validateUser(data: CreateUserDto): Promise<IToken> {
     const user = await this.getByEmail(data.email);
     const isMatch = await this.compareHash(data.password, user.password);
-    if (user && isMatch) {
+    if (isMatch) {
       const token = this.singIn({
-        id: Number(user.id),
+        id: user.id,
         email: user.email,
         roles: user.roles,
       });
+
+      await this.redisClient.setEx(token, 1000, token);
       return { token };
     }
     throw new UnauthorizedException('Incorrect password or email');
@@ -96,7 +96,10 @@ export class AuthService {
     return await bcrypt.compare(password, hash);
   }
 
-  async validate(data: EJwtPayload): Promise<User> {
+  async getHash(password: string): Promise<string> {
+    return await bcrypt.hash(password, 5);
+  }
+  async isUserExist(data: EJwtPayload): Promise<User> {
     const user = await this.userRepository.findOne({
       where: {
         id: Number(data.id),
@@ -107,6 +110,23 @@ export class AuthService {
     }
     return user;
   }
+  singIn(payload: EJwtPayload): string {
+    try {
+      return this.jwtService.sign(payload);
+    } catch (e) {
+      console.log(e);
+      throw new UnauthorizedException();
+    }
+  }
+
+  async verifyToken(token: string): Promise<EJwtPayload> {
+    try {
+      return this.jwtService.verify(token);
+    } catch (e) {
+      console.log(new Date().toISOString(), token);
+      throw new UnauthorizedException();
+    }
+  }
 
   async getByEmail(email: string) {
     return await this.userRepository.findOne({
@@ -114,13 +134,4 @@ export class AuthService {
       relations: ['roles'],
     });
   }
-
-  // private async verifyToken(token: string): Promise<EJwtPayload> {
-  //   try {
-  //     return this.jwtService.verify(token);
-  //   } catch (e) {
-  //     console.log(new Date().toISOString(), token);
-  //     throw new UnauthorizedException();
-  //   }
-  // }
 }

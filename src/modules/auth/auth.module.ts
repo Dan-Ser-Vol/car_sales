@@ -1,5 +1,4 @@
-import {Module} from '@nestjs/common';
-import { JwtModule } from '@nestjs/jwt';
+import { Module } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
@@ -8,6 +7,8 @@ import { BearerStrategy } from './bearer.strategy';
 import { User } from '../users/user.entity';
 import { RolesModule } from '../roles/roles.module';
 import { AuthController } from './auth.controller';
+import { JwtModule } from '@nestjs/jwt';
+import { RedisModule } from '@webeleon/nestjs-redis';
 
 @Module({
   imports: [
@@ -22,17 +23,20 @@ import { AuthController } from './auth.controller';
       useFactory: async () => ({
         secret: process.env.JWT_SECRET_KEY || 'Secret',
         signOptions: {
-          expiresIn: process.env.JWT_TTL || '24h',
+          expiresIn: process.env.JWT_EXP || '24h',
         },
         verifyOptions: {
           clockTolerance: 60,
-          maxAge: process.env.JWT_TTL || '24h',
+          maxAge: process.env.JWT_EXP || '24h',
         },
       }),
+    }),
+    RedisModule.forRoot({
+      url: 'redis://localhost:6379',
     }),
   ],
   controllers: [AuthController],
   providers: [AuthService, BearerStrategy],
-  exports: [PassportModule, AuthService, JwtModule],
+  exports: [PassportModule],
 })
 export class AuthModule {}
