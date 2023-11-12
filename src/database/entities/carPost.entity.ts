@@ -1,20 +1,21 @@
+import { ApiProperty } from '@nestjs/swagger';
+import { IsNumber, IsString, Min } from 'class-validator';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
-import { IsNumber, IsString, Min } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
 import { BodyTypeEnum } from '../../modules/carPost/enum/body-type.enum';
-import { StatusCarEnum } from '../../modules/carPost/enum/status.enum';
+import { CarBrandsEnum } from '../../modules/carPost/enum/car-brands.enum';
 import { CurrencyEnum } from '../../modules/carPost/enum/currensy.enum';
-import { UserEntity } from './user.entity';
-import { JoinColumn } from 'typeorm';
+import { StatusCarEnum } from '../../modules/carPost/enum/status.enum';
 import { CreateUpdateModel } from './common/create.update.entity';
+import { UserEntity } from './user.entity';
 
 @Entity('carPost')
 export class CarPostEntity extends CreateUpdateModel {
@@ -23,9 +24,9 @@ export class CarPostEntity extends CreateUpdateModel {
   id: string;
 
   @IsString()
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', enum: CarBrandsEnum, default: CarBrandsEnum.Audi })
   @ApiProperty({ example: 'Renault', description: 'The brand of the car' })
-  brand: string;
+  brand: CarBrandsEnum;
 
   @Column({ type: 'varchar' })
   @ApiProperty({ example: 'Logan', description: 'The model of the car' })

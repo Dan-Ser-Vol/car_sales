@@ -1,4 +1,3 @@
-
 import { IList } from '../../common/interface/list.interface';
 import { CarPostEntity } from '../../database/entities/carPost.entity';
 import { CarPostBaseDto } from './dto/request/carPost-base.dto';
@@ -6,7 +5,7 @@ import { PostListQueryRequestDto } from './dto/request/post-list-query.request.d
 import { CarPostDetailsResponseDto } from './dto/response/carPost-details-response.dto';
 
 export class CarPostResponseMapper {
-  static toDetailsListDto(data: CarPostEntity[]): CarPostDetailsResponseDto[] {
+  static toDetailsListDto(data: CarPostEntity[]): any {
     return data.map(this.toDetailsDto);
   }
 
@@ -36,6 +35,7 @@ export class CarPostResponseMapper {
       sold: data.sold,
       region: data.region,
       description: data.description,
+      user: data.user,
       createdAt: data.createdAt,
       updatedAt: data.updatedAt,
     };
@@ -56,6 +56,7 @@ export class CarPostResponseMapper {
       sold: data.sold,
       region: data.region,
       description: data.description,
+      user: data.user,
       createdAt: data.createdAt,
       updatedAt: data.updatedAt,
     };

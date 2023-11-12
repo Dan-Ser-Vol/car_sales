@@ -1,3 +1,4 @@
+import { IsBoolean, IsOptional, IsString } from 'class-validator';
 import {
   Column,
   Entity,
@@ -5,11 +6,11 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { CreateUpdateModel } from './common/create.update.entity';
-import { IsOptional, IsString } from 'class-validator';
-import { RoleEntity } from './role.entity';
+
 import { AccountTypeEnum } from '../../modules/user/enum/account-type.enum';
 import { CarPostEntity } from './carPost.entity';
+import { CreateUpdateModel } from './common/create.update.entity';
+import { RoleEntity } from './role.entity';
 
 @Entity('user')
 export class UserEntity extends CreateUpdateModel {
@@ -38,6 +39,10 @@ export class UserEntity extends CreateUpdateModel {
     default: AccountTypeEnum.BASIC,
   })
   accountType: AccountTypeEnum.BASIC;
+
+  @Column({ type: 'boolean', default: false })
+  @IsBoolean()
+  banned: boolean;
 
   @Column({ nullable: true })
   @IsOptional()

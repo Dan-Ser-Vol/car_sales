@@ -17,5 +17,6 @@ export class CarPostDetailsResponseDto extends PickType(CarPostBaseDto, [
   'region',
   'description',
   'createdAt',
+  'user',
   'updatedAt',
 ]) {}

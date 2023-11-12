@@ -26,9 +26,6 @@ import {
 import { RolesDecorator } from '../../common/decorators/role.decorator';
 import { RolesGuard } from '../../common/guards/role.guard';
 import { UserRoleEnum } from '../role/enum/user-role.enum';
-import { UserListQueryRequestDto } from '../user/dto/request/user-list-query.request.dto';
-import { UserListResponseDto } from '../user/dto/response/user.list-response.dto';
-import { UserResponseMapper } from '../user/user.response.mapper';
 import { CarPostResponseMapper } from './carPost.response.mapper';
 import { CarPostService } from './carPost.service';
 import { CarPostCreateDto } from './dto/request/carPost-create.dto';
@@ -39,12 +36,12 @@ import { CarPostDetailsResponseDto } from './dto/response/carPost-details-respon
 
 @ApiTags('Cars Post')
 @ApiBearerAuth()
-// @UseGuards(AuthGuard(), RolesGuard)
-// @RolesDecorator(UserRoleEnum.SELLER, UserRoleEnum.ADMIN)
+@UseGuards(AuthGuard(), RolesGuard)
 @Controller('posts')
 export class CarPostController {
   constructor(private carPostService: CarPostService) {}
 
+  @RolesDecorator(UserRoleEnum.SELLER, UserRoleEnum.ADMIN, UserRoleEnum.MANAGER)
   @ApiOperation({ summary: 'Create new post' })
   @ApiResponse({
     status: 200,
@@ -64,6 +61,12 @@ export class CarPostController {
     }
   }
 
+  @RolesDecorator(
+    UserRoleEnum.BUYER,
+    UserRoleEnum.SELLER,
+    UserRoleEnum.ADMIN,
+    UserRoleEnum.MANAGER,
+  )
   @ApiOperation({ summary: 'Get all posts' })
   @ApiResponse({
     status: 200,
@@ -82,6 +85,7 @@ export class CarPostController {
     }
   }
 
+  @RolesDecorator(UserRoleEnum.SELLER, UserRoleEnum.ADMIN, UserRoleEnum.MANAGER)
   @ApiOperation({ summary: 'Add an image to the post' })
   @ApiResponse({
     status: 200,
@@ -102,6 +106,7 @@ export class CarPostController {
     }
   }
 
+  @RolesDecorator(UserRoleEnum.SELLER, UserRoleEnum.ADMIN, UserRoleEnum.MANAGER)
   @ApiOperation({ summary: 'Delete an image to the post' })
   @ApiResponse({
     status: 200,
@@ -119,6 +124,12 @@ export class CarPostController {
     }
   }
 
+  @RolesDecorator(
+    UserRoleEnum.BUYER,
+    UserRoleEnum.SELLER,
+    UserRoleEnum.ADMIN,
+    UserRoleEnum.MANAGER,
+  )
   @ApiOperation({ summary: 'Get post by id' })
   @ApiResponse({
     status: 200,
@@ -137,6 +148,12 @@ export class CarPostController {
     }
   }
 
+  @RolesDecorator(
+    UserRoleEnum.BUYER,
+    UserRoleEnum.SELLER,
+    UserRoleEnum.ADMIN,
+    UserRoleEnum.MANAGER,
+  )
   @ApiOperation({ summary: 'Get post by user id' })
   @ApiResponse({
     status: 200,
@@ -144,15 +161,18 @@ export class CarPostController {
     type: CarPostDetailsResponseDto,
   })
   @Get('user/:userId')
-  async getPostByUserId(@Param('userId') userId: string): Promise<void> {
+  async getPostByUserId(
+    @Param('userId') userId: string,
+  ): Promise<CarPostDetailsResponseDto[]> {
     try {
       const result = await this.carPostService.getCarPostByUserId(userId);
-      // return CarPostResponseMapper.toDetailsDto(result);
+      return CarPostResponseMapper.toDetailsListDto(result);
     } catch (err) {
       throw new HttpException(err.message, HttpStatus.NOT_FOUND);
     }
   }
 
+  @RolesDecorator(UserRoleEnum.SELLER, UserRoleEnum.ADMIN)
   @ApiOperation({ summary: 'Update car post by id' })
   @ApiResponse({
     status: 200,
@@ -172,6 +192,7 @@ export class CarPostController {
     }
   }
 
+  @RolesDecorator(UserRoleEnum.SELLER, UserRoleEnum.ADMIN)
   @ApiOperation({ summary: 'Delete car post by id' })
   @ApiResponse({
     status: 200,

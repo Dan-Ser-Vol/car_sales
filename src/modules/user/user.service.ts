@@ -1,4 +1,4 @@
-import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import {HttpException, HttpStatus, Injectable, UnprocessableEntityException} from '@nestjs/common';
 import { UserRepository } from './user.repository';
 import { UserEntity } from '../../database/entities/user.entity';
 import { UserUpdateRequestDto } from './dto/request/user.update-request.dto';
@@ -41,6 +41,17 @@ export class UserService {
   public async saveUser(user: UserCreateRequestDto): Promise<UserEntity> {
     return await this.userRepository.save(user);
   }
+
+  // async ban(userId: string) {
+  //   const user = await this.findUserOrException({ id: userId });
+  //
+  //   if (!user) {
+  //     throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+  //   }
+  //   user.banned = true;
+  //   await this.userRepository.save(user);
+  //   return user;
+  // }
 
   public async findUserOrException(userId: string): Promise<UserEntity> {
     const findUser = await this.userRepository.findOneBy({ id: userId });

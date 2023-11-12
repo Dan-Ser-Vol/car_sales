@@ -1,13 +1,13 @@
+import { IList } from '../../common/interface/list.interface';
 import { UserEntity } from '../../database/entities/user.entity';
+import { CarPostResponseMapper } from '../carPost/carPost.response.mapper';
+import { RoleResponseMapper } from '../role/role.response.mapper';
+import { UserListQueryRequestDto } from './dto/request/user-list-query.request.dto';
+import { UserDetailsResponseDto } from './dto/response/user.details-response.dto';
 import {
   UserListItemResponseDto,
   UserListResponseDto,
 } from './dto/response/user.list-response.dto';
-import { IList } from '../../common/interface/list.interface';
-import { UserListQueryRequestDto } from './dto/request/user-list-query.request.dto';
-import { UserDetailsResponseDto } from './dto/response/user.details-response.dto';
-import { RoleResponseMapper } from '../role/role.response.mapper';
-import { CarPostResponseMapper } from '../carPost/carPost.response.mapper';
 
 export class UserResponseMapper {
   static toListDto(

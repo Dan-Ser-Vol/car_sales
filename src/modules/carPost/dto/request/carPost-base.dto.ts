@@ -13,19 +13,23 @@ import {
   Min,
 } from 'class-validator';
 
+import { UserEntity } from '../../../../database/entities/user.entity';
 import { BodyTypeEnum } from '../../enum/body-type.enum';
+import { CarBrandsEnum } from '../../enum/car-brands.enum';
 import { CurrencyEnum } from '../../enum/currensy.enum';
 import { StatusCarEnum } from '../../enum/status.enum';
-import {CarPostDetailsResponseDto} from "../response/carPost-details-response.dto";
 
 export class CarPostBaseDto {
   @IsString()
   id: string;
 
-  @ApiProperty({ example: 'Audi', description: 'The brand of the car' })
-  @IsString()
+  @ApiProperty({
+    example: 'Audi',
+    description: 'The brand of the car',
+    enum: CarBrandsEnum,
+  })
   @IsNotEmpty()
-  brand: string;
+  brand: CarBrandsEnum;
 
   @ApiProperty({ example: 'Q7', description: 'The model of the car' })
   @IsString()
@@ -103,6 +107,8 @@ export class CarPostBaseDto {
   @IsString()
   @IsOptional()
   description: string;
+
+  user: UserEntity;
 
   @IsDate()
   createdAt: Date;

@@ -8,6 +8,7 @@ import {
 import * as fs from 'fs';
 import * as path from 'path';
 
+import { IList } from '../../common/interface/list.interface';
 import { CarPostEntity } from '../../database/entities/carPost.entity';
 import { FilesService } from '../files/files.service';
 import { UserRepository } from '../user/user.repository';
@@ -17,7 +18,6 @@ import { CarPostUpdateDto } from './dto/request/carPost-update.dto';
 import { ImageDto } from './dto/request/image.dto';
 import { PostListQueryRequestDto } from './dto/request/post-list-query.request.dto';
 import { CarPostDetailsResponseDto } from './dto/response/carPost-details-response.dto';
-import {IList} from "../../common/interface/list.interface";
 
 @Injectable()
 export class CarPostService {
