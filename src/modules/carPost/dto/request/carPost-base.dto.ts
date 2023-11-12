@@ -16,6 +16,7 @@ import {
 import { BodyTypeEnum } from '../../enum/body-type.enum';
 import { CurrencyEnum } from '../../enum/currensy.enum';
 import { StatusCarEnum } from '../../enum/status.enum';
+import {CarPostDetailsResponseDto} from "../response/carPost-details-response.dto";
 
 export class CarPostBaseDto {
   @IsString()

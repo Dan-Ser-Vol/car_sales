@@ -36,7 +36,7 @@ export class CarPostEntity extends CreateUpdateModel {
   @IsNumber()
   year: number;
 
-  @Column({ type: 'varchar', array: true, default: null })
+  @Column({ type: 'varchar', array: true })
   @ApiProperty({
     example: 'toyota45w5w.png',
     description: 'The image of the car',

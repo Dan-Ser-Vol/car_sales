@@ -1,4 +1,5 @@
 import { PickType } from '@nestjs/swagger';
+
 import { CarPostBaseDto } from '../request/carPost-base.dto';
 
 export class CarPostDetailsResponseDto extends PickType(CarPostBaseDto, [
