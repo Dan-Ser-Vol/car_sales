@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 
 import { AccountTypeEnum } from '../../modules/user/enum/account-type.enum';
+import { BanStatusEnum } from '../../modules/user/enum/ban-status.enum';
 import { CarPostEntity } from './carPost.entity';
 import { CreateUpdateModel } from './common/create.update.entity';
 import { RoleEntity } from './role.entity';
@@ -40,9 +41,13 @@ export class UserEntity extends CreateUpdateModel {
   })
   accountType: AccountTypeEnum.BASIC;
 
-  @Column({ type: 'boolean', default: false })
+  @Column({
+    type: 'enum',
+    enum: BanStatusEnum,
+    default: BanStatusEnum.INACTIVE,
+  })
   @IsBoolean()
-  banned: boolean;
+  banned: BanStatusEnum;
 
   @Column({ nullable: true })
   @IsOptional()

@@ -35,13 +35,18 @@ export class UserResponseMapper {
       id: data.id,
       username: data.username,
       email: data.email,
+      phone: data.phone,
       roles: data.roles
         ? RoleResponseMapper.toDetailsListDto(data.roles)
         : null,
-      cars: data.posts
+      posts: data.posts
         ? CarPostResponseMapper.toDetailsListDto(data.posts)
         : null,
+      accountType: data.accountType,
+      banned: data.banned,
       token: data.token,
+      password: data.password,
+      updatedAt: data.updatedAt,
       createdAt: data.createdAt,
     };
   }

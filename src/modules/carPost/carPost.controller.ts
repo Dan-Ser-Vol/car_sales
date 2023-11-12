@@ -23,9 +23,12 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 
+import { AccountTypeDecorator } from '../../common/decorators/account-type.decorator';
 import { RolesDecorator } from '../../common/decorators/role.decorator';
+import { AccountTypeGuard } from '../../common/guards/account-type.guard';
 import { RolesGuard } from '../../common/guards/role.guard';
 import { UserRoleEnum } from '../role/enum/user-role.enum';
+import { AccountTypeEnum } from '../user/enum/account-type.enum';
 import { CarPostResponseMapper } from './carPost.response.mapper';
 import { CarPostService } from './carPost.service';
 import { CarPostCreateDto } from './dto/request/carPost-create.dto';
@@ -36,7 +39,7 @@ import { CarPostDetailsResponseDto } from './dto/response/carPost-details-respon
 
 @ApiTags('Cars Post')
 @ApiBearerAuth()
-@UseGuards(AuthGuard(), RolesGuard)
+@UseGuards(AuthGuard(), RolesGuard, AccountTypeGuard)
 @Controller('posts')
 export class CarPostController {
   constructor(private carPostService: CarPostService) {}
@@ -86,6 +89,7 @@ export class CarPostController {
   }
 
   @RolesDecorator(UserRoleEnum.SELLER, UserRoleEnum.ADMIN, UserRoleEnum.MANAGER)
+  @AccountTypeDecorator(AccountTypeEnum.PREMIUM)
   @ApiOperation({ summary: 'Add an image to the post' })
   @ApiResponse({
     status: 200,
@@ -107,6 +111,7 @@ export class CarPostController {
   }
 
   @RolesDecorator(UserRoleEnum.SELLER, UserRoleEnum.ADMIN, UserRoleEnum.MANAGER)
+  @AccountTypeDecorator(AccountTypeEnum.PREMIUM)
   @ApiOperation({ summary: 'Delete an image to the post' })
   @ApiResponse({
     status: 200,

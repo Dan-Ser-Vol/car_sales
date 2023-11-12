@@ -6,21 +6,24 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { UserLoginDto } from './dto/request/user.login-request.dto';
-import { AuthService } from './auth.service';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+
+import { BanDecorator } from '../../common/decorators/ban.decorator';
+import { BanUserGuard } from '../../common/guards/ban.guard';
 import { LogoutGuard } from '../../common/guards/logout.guard';
+import { IToken } from '../../common/interface/token.interface';
+import { BanStatusEnum } from '../user/enum/ban-status.enum';
+import { UserResponseMapper } from '../user/user.response.mapper';
+import { AuthService } from './auth.service';
+import { UserLoginDto } from './dto/request/user.login-request.dto';
 import { UserRegisterRequestDto } from './dto/request/user.register-request.dto';
 import { UserRegisterResponseDto } from './dto/response/user.register-response.dto';
-import { UserResponseMapper } from '../user/user.response.mapper';
-import { IToken } from '../../common/interface/token.interface';
 
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
-
   @ApiOperation({ summary: 'Register new user' })
   @ApiResponse({
     status: 200,
@@ -28,7 +31,7 @@ export class AuthController {
     type: UserRegisterResponseDto,
   })
   @Post('register')
-  async createUser(
+  async registerUser(
     @Body() dto: UserRegisterRequestDto,
   ): Promise<UserRegisterResponseDto> {
     try {
@@ -40,6 +43,8 @@ export class AuthController {
   }
 
   @ApiOperation({ summary: 'Login user' })
+  @UseGuards(AuthGuard(), BanUserGuard)
+  @BanDecorator(BanStatusEnum.INACTIVE)
   @ApiResponse({
     status: 200,
     description: 'Successful response',

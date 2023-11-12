@@ -1,21 +1,17 @@
-import {
-  HttpException,
-  HttpStatus,
-  Injectable,
-  Logger,
-  UnprocessableEntityException,
-} from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { UserEntity } from '../../database/entities/user.entity';
-import { Repository } from 'typeorm';
-import { JwtService } from '@nestjs/jwt';
-import { InjectRedisClient, RedisClient } from '@webeleon/nestjs-redis';
-import { UserLoginDto } from './dto/request/user.login-request.dto';
-import { IToken } from '../../common/interface/token.interface';
+import {HttpException, HttpStatus, Injectable, Logger, UnprocessableEntityException,} from '@nestjs/common';
+import {JwtService} from '@nestjs/jwt';
+import {InjectRepository} from '@nestjs/typeorm';
+import {InjectRedisClient, RedisClient} from '@webeleon/nestjs-redis';
 import * as bcrypt from 'bcrypt';
-import { UserRegisterRequestDto } from './dto/request/user.register-request.dto';
-import { RoleService } from '../role/role.service';
-import { UserRoleEnum } from '../role/enum/user-role.enum';
+import {Repository} from 'typeorm';
+
+import {IToken} from '../../common/interface/token.interface';
+import {UserEntity} from '../../database/entities/user.entity';
+import {UserRoleEnum} from '../role/enum/user-role.enum';
+import {RoleService} from '../role/role.service';
+import {UserLoginDto} from './dto/request/user.login-request.dto';
+import {UserRegisterRequestDto} from './dto/request/user.register-request.dto';
+import {AccountTypeEnum} from "../user/enum/account-type.enum";
 
 @Injectable()
 export class AuthService {
@@ -42,6 +38,7 @@ export class AuthService {
     const hashPassword = await bcrypt.hash(dto.password, 5);
     const newUser = await this.userRepository.create({
       ...dto,
+      accountType: AccountTypeEnum.BASIC,
       roles: [role],
       password: hashPassword,
     });

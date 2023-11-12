@@ -1,8 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsDate, IsEmail, IsEnum, IsNumber, IsString } from 'class-validator';
-import { UserRoleEnum } from '../../../role/enum/user-role.enum';
-import { RoleResponseDto } from '../../../role/dto/response/role-response.dto';
+
 import { CarPostDetailsResponseDto } from '../../../carPost/dto/response/carPost-details-response.dto';
+import { RoleResponseDto } from '../../../role/dto/response/role-response.dto';
+import { UserRoleEnum } from '../../../role/enum/user-role.enum';
 
 export class UserRegisterResponseDto {
   @ApiProperty()
@@ -19,7 +20,7 @@ export class UserRegisterResponseDto {
   email: string;
 
   @ApiProperty()
-  cars: CarPostDetailsResponseDto[];
+  posts: CarPostDetailsResponseDto[];
 
   @ApiProperty()
   @IsString()

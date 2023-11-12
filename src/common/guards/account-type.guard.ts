@@ -7,20 +7,20 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 
-import { ROLES_KEY } from '../decorators/role.decorator';
+import { ACCOUNT_TYPE_KEY } from '../decorators/account-type.decorator';
 
 @Injectable()
-export class RolesGuard implements CanActivate {
+export class AccountTypeGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     let userTypeAllowed = this.reflector.get<string[]>(
-      ROLES_KEY,
+      ACCOUNT_TYPE_KEY,
       context.getHandler(),
     );
     if (!userTypeAllowed) {
       userTypeAllowed = this.reflector.get<string[]>(
-        ROLES_KEY,
+        ACCOUNT_TYPE_KEY,
         context.getClass(),
       );
       if (!userTypeAllowed) {
@@ -29,8 +29,11 @@ export class RolesGuard implements CanActivate {
     }
     const user = request.user;
 
-    if (!user.roles.some((role) => userTypeAllowed.includes(role.value))) {
-      throw new HttpException('Access denied.', HttpStatus.FORBIDDEN);
+    if (!userTypeAllowed.includes(user.accountType)) {
+      throw new HttpException(
+        'Access denied, Because you have basic account!',
+        HttpStatus.FORBIDDEN,
+      );
     }
 
     return true;

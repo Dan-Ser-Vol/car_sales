@@ -9,26 +9,27 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { RoleService } from './role.service';
+import { AuthGuard } from '@nestjs/passport';
 import {
   ApiBearerAuth,
   ApiOperation,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { CreateRoleDto } from './dto/request/create-role.dto';
+
 import { RolesDecorator } from '../../common/decorators/role.decorator';
-import { AuthGuard } from '@nestjs/passport';
-import { UserRoleEnum } from './enum/user-role.enum';
 import { RolesGuard } from '../../common/guards/role.guard';
+import { CreateRoleDto } from './dto/request/create-role.dto';
 import { RoleValueDto } from './dto/request/role-value.dto';
 import { RoleResponseDto } from './dto/response/role-response.dto';
+import { UserRoleEnum } from './enum/user-role.enum';
+import { RoleService } from './role.service';
 
 @ApiTags('Roles')
 @Controller('roles')
-@RolesDecorator(UserRoleEnum.ADMIN)
 @ApiBearerAuth()
 @UseGuards(AuthGuard(), RolesGuard)
+@RolesDecorator(UserRoleEnum.ADMIN, UserRoleEnum.MANAGER)
 export class RoleController {
   constructor(private readonly roleService: RoleService) {}
 
