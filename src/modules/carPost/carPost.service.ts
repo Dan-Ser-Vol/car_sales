@@ -1,74 +1,87 @@
-// cars.service.ts
-import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { CreateCarPostDto, ResponseCarDto } from './dto/carPost.dto';
-import { CarQueryDto } from '../../common/query/car.query.dto';
-import { paginateRawAndEntities } from 'nestjs-typeorm-paginate';
-import { PaginatedDto } from '../../common/pagination/response';
-import { CarPost } from './carPost.entity';
-import { FileService } from '../file/file.service';
-import { UserService } from '../users/user.service';
-import { CarPostResponseDto } from './dto/carPostResponse.dto';
+import { Injectable, NotFoundException } from '@nestjs/common';
+
+import { FilesService } from '../files/files.service';
+import { UserRepository } from '../user/user.repository';
+import { CarPostRepository } from './carPost.repository';
+import { CarPostCreateDto } from './dto/request/carPost-create.dto';
+import { CarPostDetailsResponseDto } from './dto/response/carPost-details-response.dto';
 
 @Injectable()
 export class CarPostService {
   constructor(
-    @InjectRepository(CarPost)
-    private readonly carPostRepository: Repository<CarPost>,
-    private readonly userService: UserService,
-    private readonly fileService: FileService,
+    private readonly carPostRepository: CarPostRepository,
+    private readonly userRepository: UserRepository,
+    private readonly filesService: FilesService,
   ) {}
 
-  async create(
-    data: CreateCarPostDto,
-    image: any,
-  ): Promise<CarPostResponseDto> {
-    const fileName = await this.fileService.createFile(image);
-    console.log(fileName);
-    const post = this.carPostRepository.create({ ...data, image: fileName });
-    return this.carPostRepository.save(post);
+  async createPost(
+    data: CarPostCreateDto,
+    userId: string,
+  ): Promise<CarPostDetailsResponseDto> {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) {
+      throw new NotFoundException(`User with id ${userId} not found`);
+    }
+    const newPost = this.carPostRepository.create({
+      ...data,
+      user: user,
+    });
+
+    return await this.carPostRepository.save(newPost);
   }
 
-  // async updateCar(id: number, updateCarDto: UpdateCarDto) {
-  //   const carPost = await this.carRepository.findOne(id);
-  //   if (!carPost) {
-  //     console.log(updateCarDto);
+  // public async addImageToPost(postId: number, image: any): Promise<CarPostEntity> {
+  //   try {
+  //     const fileName = await this.fileService.createFile(image);
+  //
+  //     // Отримати існуючий пост за його ідентифікатором
+  //     const existingPost = await this.carPostRepository.findOne(postId);
+  //
+  //     // Перевірити, чи знайдено пост
+  //     if (!existingPost) {
+  //       // Обробити помилку, якщо пост не знайдено
+  //       throw new NotFoundException(`Car post with id ${postId} not found`);
+  //     }
+  //
+  //     // Оновити пост і додати ім'я файлу зображення
+  //     existingPost.image = fileName;
+  //
+  //     // Зберегти оновлений пост
+  //     const updatedPost = await this.carPostRepository.save(existingPost);
+  //
+  //     return updatedPost;
+  //   } catch (err) {
+  //     // Обробити помилку
+  //     throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
   //   }
-  //
-  //   // Update carPost properties
-  //
-  //   return this.carRepository.save(carPost);
-  // }
 
-  // async getAll(query: CarQueryDto): Promise<PaginatedDto<ResponseCarDto>> {
-  //   query.sort = query.sort || 'id';
-  //   query.order = query.order || 'ASC';
-  //   const options = {
-  //     page: query.page || 1,
-  //     limit: query.limit || 20,
-  //   };
+  // public async getCarPostById(carId: string): Promise<CarPostEntity> {
+  //   return await this.findCarPostByIdOrException(carId);
+  // }
   //
-  //   const queryBuilder = this.carRepository.createQueryBuilder('cars');
+  // public async updateCar(
+  //   carId: string,
+  //   dto: CarPostUpdateDto,
+  // ): Promise<CarPostEntity> {
+  //   const entity = await this.findCarPostByIdOrException(carId);
+  //   this.carPostRepository.merge(entity, dto);
+  //   return await this.carPostRepository.save(entity);
+  // }
   //
-  //   if (query.search) {
-  //     queryBuilder.where('"title" IN(:...search)', {
-  //       search: query.search.split(','),
-  //     });
+  //
+  //
+  // public async deleteCarPost(carId: string): Promise<void> {
+  //   const entity = await this.findCarPostByIdOrException(carId);
+  //   await this.carPostRepository.remove(entity);
+  // }
+  //
+  // private async findCarPostByIdOrException(
+  //   carId: string,
+  // ): Promise<CarPostEntity> {
+  //   const car = await this.carPostRepository.findOneBy({ id: carId });
+  //   if (!car) {
+  //     throw new UnprocessableEntityException('Car entity not found');
   //   }
-  //
-  //   queryBuilder.orderBy(`"${query.sort}"`, query.order as 'ASC' | 'DESC');
-  //
-  //   const [pagination, rawResults] = await paginateRawAndEntities(
-  //     queryBuilder,
-  //     options,
-  //   );
-  //
-  //   return {
-  //     page: pagination.meta.currentPage,
-  //     totalPages: pagination.meta.totalPages,
-  //     countItems: pagination.meta.totalItems,
-  //     entities: rawResults as ResponseCarDto[],
-  //   };
+  //   return car;
   // }
 }

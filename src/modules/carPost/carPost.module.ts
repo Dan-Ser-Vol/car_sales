@@ -1,14 +1,23 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { CarPost } from './carPost.entity';
 import { CarPostController } from './carPost.controller';
 import { CarPostService } from './carPost.service';
-import { FileModule } from '../file/file.module';
-import { UserModule } from '../users/user.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { CarPostRepository } from './carPost.repository';
+import { AuthModule } from '../auth/auth.module';
+import { CarPostEntity } from '../../database/entities/carPost.entity';
+import { UserModule } from '../user/user.module';
+import { FilesModule } from '../files/files.module';
+import { FilesService } from '../files/files.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([CarPost]), FileModule, UserModule],
+  imports: [
+    TypeOrmModule.forFeature([CarPostEntity]),
+    AuthModule,
+    UserModule,
+    FilesModule,
+  ],
   controllers: [CarPostController],
-  providers: [CarPostService],
+  providers: [CarPostService, CarPostRepository, FilesService],
+  exports: [CarPostService, CarPostRepository],
 })
 export class CarPostModule {}

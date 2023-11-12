@@ -1,0 +1,28 @@
+version: '3.9'
+
+services:
+  car_sales-postgres:
+    image: postgis/postgis
+    ports:
+      - '${POSTGRES_EXTERNAL_PORT:-5431}:5432'
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: user
+      POSTGRES_DB: car_sales
+    volumes:
+      - car_sales-db:/var/lib/postgresql/car_sales
+
+  redis:
+    image: redis:latest
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - car_sales-db:/var/lib/redis/car_sales
+    environment:
+      - REDIS_PASSWORD=my-password
+      - REDIS_PORT=6379
+      - REDIS_DATABASES=16
+
+volumes:
+  car_sales-db:

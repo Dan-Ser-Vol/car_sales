@@ -1,42 +1,49 @@
 import { Module } from '@nestjs/common';
+import { AuthService } from './auth.service';
+import { AuthController } from './auth.controller';
 import { PassportModule } from '@nestjs/passport';
 import { TypeOrmModule } from '@nestjs/typeorm';
-
-import { AuthService } from './auth.service';
-import { BearerStrategy } from './bearer.strategy';
-import { User } from '../users/user.entity';
-import { RolesModule } from '../roles/roles.module';
-import { AuthController } from './auth.controller';
+import { UserEntity } from '../../database/entities/user.entity';
 import { JwtModule } from '@nestjs/jwt';
+import { BearerStrategy } from './bearer.strategy';
 import { RedisModule } from '@webeleon/nestjs-redis';
+import { CommonConfigModule } from '../../config/database/config.module';
+import { CommonConfigService } from '../../config/database/configuration.service';
+import { RoleEntity } from '../../database/entities/role.entity';
+import { RoleModule } from '../role/role.module';
+import { RoleService } from '../role/role.service';
 
 @Module({
   imports: [
-    RolesModule,
+    RedisModule,
     PassportModule.register({
       defaultStrategy: 'bearer',
       property: 'user',
-      session: false,
     }),
-    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([UserEntity, RoleEntity]),
+    RedisModule.forRootAsync({
+      imports: [CommonConfigModule],
+      useFactory: async (commonConfigService: CommonConfigService) => {
+        return {
+          url: commonConfigService.redis_url,
+        };
+      },
+      inject: [CommonConfigService],
+    }),
     JwtModule.registerAsync({
-      useFactory: async () => ({
-        secret: process.env.JWT_SECRET_KEY || 'Secret',
+      imports: [CommonConfigModule],
+      useFactory: async (commonConfigService: CommonConfigService) => ({
+        secret: commonConfigService.jwt_secret,
         signOptions: {
-          expiresIn: process.env.JWT_EXP || '24h',
-        },
-        verifyOptions: {
-          clockTolerance: 60,
-          maxAge: process.env.JWT_EXP || '24h',
+          expiresIn: commonConfigService.jwt_expires_in,
         },
       }),
+      inject: [CommonConfigService],
     }),
-    RedisModule.forRoot({
-      url: 'redis://localhost:6379',
-    }),
+    RoleModule,
   ],
+  providers: [AuthService, BearerStrategy, RoleService],
   controllers: [AuthController],
-  providers: [AuthService, BearerStrategy],
-  exports: [PassportModule],
+  exports: [AuthService, PassportModule],
 })
 export class AuthModule {}

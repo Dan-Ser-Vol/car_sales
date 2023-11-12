@@ -1,43 +1,86 @@
-// cars.controller.ts
+import { Body, Controller, Post, Request, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
 import {
-  Body,
-  Controller,
-  Post,
-  UploadedFile,
-  UseInterceptors,
-} from '@nestjs/common';
-import { CreateCarPostDto, ResponseCarDto } from './dto/carPost.dto';
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+
+import { RolesDecorator } from '../../common/decorators/role.decorator';
+import { RolesGuard } from '../../common/guards/role.guard';
+import { UserRoleEnum } from '../role/enum/user-role.enum';
 import { CarPostService } from './carPost.service';
-import { ApiExtraModels, ApiTags } from '@nestjs/swagger';
-import { PaginatedDto } from '../../common/pagination/response';
-import { CarPostResponseDto } from './dto/carPostResponse.dto';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { CarPostCreateDto } from './dto/request/carPost-create.dto';
+import { CarPostDetailsResponseDto } from './dto/response/carPost-details-response.dto';
 
-// @UseGuards(AuthGuard('bearer'))
-@ApiTags('cars posts')
-@ApiExtraModels(ResponseCarDto, PaginatedDto)
-@Controller('posts')
+@ApiTags('Cars Post')
+@ApiBearerAuth()
+@UseGuards(AuthGuard(), RolesGuard)
+@RolesDecorator(UserRoleEnum.SELLER, UserRoleEnum.ADMIN)
+@Controller('post')
 export class CarPostController {
-  constructor(private readonly carPostService: CarPostService) {}
+  constructor(private carPostService: CarPostService) {}
 
-  @Post()
-  @UseInterceptors(FileInterceptor('image'))
-  async create(
-    @Body() data: CreateCarPostDto,
-    @UploadedFile() image,
-  ): Promise<CarPostResponseDto> {
-    console.log(image);
-    return await this.carPostService.create(data, image);
+  @ApiOperation({ summary: 'Create new post' })
+  @ApiResponse({
+    status: 200,
+    description: 'Successful response',
+    type: CarPostDetailsResponseDto,
+  })
+  @Post('create')
+  async createCar(
+    @Request() req: any,
+    @Body() data: CarPostCreateDto,
+  ): Promise<CarPostDetailsResponseDto> {
+    try {
+      return await this.carPostService.createPost(data, req.user.id);
+    } catch (err) {
+      console.log(err);
+    }
   }
 
-  //
-  // @Put(':id')
-  // updateCar(@Body() updateCarDto: UpdateCarDto, @Param('id') id: number) {
-  //   return this.carService.updateCar(id, updateCarDto);
+  // @UseInterceptors(FileInterceptor('image'))
+  // @Post()
+  // async addImageToPost(Body()postId:string , @UploadedFile() image: Express.Multer.File) {
+  //   console.log(image);
+  //   return await this.carPostService.addImageToPost(image, postId);
   // }
-  // @ApiPaginatedResponse('entities', ResponseCarDto)
-  // @Get()
-  // async getAll(@Query() query: CarQueryDto) {
-  //   return await this.carPostService.getAll(query);
+
+  // @ApiOperation({ summary: 'Get car by id' })
+  // @Get(':carId')
+  // async getCarById(
+  //   @Param('carId') carId: string,
+  // ): Promise<CarPostDetailsResponseDto> {
+  //   try {
+  //     const result = await this.carService.getCarById(carId);
+  //     return CarPostResponseMapper.toDetailsDto(result);
+  //   } catch (err) {
+  //     throw new HttpException(err.message, HttpStatus.NOT_FOUND);
+  //   }
+  // }
+  //
+  // @ApiOperation({ summary: 'Update car by id' })
+  // @Put(':carId')
+  // async updateCar(
+  //   @Param('carId') carId: string,
+  //   @Body() body: CarPostUpdateDto,
+  // ): Promise<CarPostDetailsResponseDto> {
+  //   try {
+  //     const result = await this.carService.updateCar(carId, body);
+  //     return CarPostResponseMapper.toDetailsDto(result);
+  //   } catch (err) {
+  //     throw new HttpException(err.message, HttpStatus.NOT_FOUND);
+  //   }
+  // }
+  //
+  // @ApiOperation({ summary: 'Delete car by id' })
+  // @Delete(':carId')
+  // async deleteCar(@Param('carId') carId: string): Promise<void> {
+  //   try {
+  //     await this.carService.deleteCar(carId);
+  //   } catch (err) {
+  //     throw new HttpException(err.message, HttpStatus.NOT_FOUND);
+  //   }
   // }
 }

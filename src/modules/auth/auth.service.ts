@@ -2,136 +2,101 @@ import {
   HttpException,
   HttpStatus,
   Injectable,
-  UnauthorizedException,
+  Logger,
+  UnprocessableEntityException,
 } from '@nestjs/common';
-import { Repository } from 'typeorm';
-import { User } from '../users/user.entity';
-import { EJwtPayload } from './interfaces/auth.interface';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateLoginSocialDto, CreateUserDto } from '../users/dto/user.dto';
-import * as bcrypt from 'bcrypt';
-import { RolesService } from '../roles/roles.service';
-import { OAuth2Client } from 'google-auth-library';
-import { IToken } from './interfaces/token.interface';
+import { UserEntity } from '../../database/entities/user.entity';
+import { Repository } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRedisClient, RedisClient } from '@webeleon/nestjs-redis';
-
-const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '';
-const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET || '';
+import { UserLoginDto } from './dto/request/user.login-request.dto';
+import { IToken } from '../../common/interface/token.interface';
+import * as bcrypt from 'bcrypt';
+import { UserRegisterRequestDto } from './dto/request/user.register-request.dto';
+import { RoleService } from '../role/role.service';
+import { UserRoleEnum } from '../role/enum/user-role.enum';
 
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectRepository(User)
-    public readonly userRepository: Repository<User>,
-    public readonly roleService: RolesService,
+    @InjectRepository(UserEntity)
+    private readonly userRepository: Repository<UserEntity>,
+    private readonly roleService: RoleService,
+    @InjectRedisClient()
+    private readonly redisClient: RedisClient,
     private readonly jwtService: JwtService,
-    @InjectRedisClient() private redisClient: RedisClient,
   ) {}
 
-  async register(data: CreateUserDto): Promise<User> {
-    const candidate = await this.getByEmail(data.email);
-    if (candidate) {
+  public async register(dto: UserRegisterRequestDto): Promise<UserEntity> {
+    const findUser = await this.userRepository.findOneBy({
+      email: dto.email,
+    });
+    if (findUser) {
       throw new HttpException(
-        'This user already exist',
-        HttpStatus.BAD_REQUEST,
+        'User already exist',
+        HttpStatus.UNPROCESSABLE_ENTITY,
       );
     }
-
-    const hashPassword = await this.getHash(data.password);
-    const user = this.userRepository.create({
-      ...data,
+    const role = await this.roleService.getRoleByValue(UserRoleEnum.BUYER);
+    const hashPassword = await bcrypt.hash(dto.password, 5);
+    const newUser = await this.userRepository.create({
+      ...dto,
+      roles: [role],
       password: hashPassword,
     });
-    await this.userRepository.save(user);
-
-    const role = await this.roleService.getByValue('USER');
-    user.roles = [role];
-    return await this.userRepository.save(user);
+    const token = this.signIn({ email: newUser.email });
+    await this.redisClient.setEx(token, 10000, token);
+    newUser.token = token;
+    return await this.userRepository.save(newUser);
   }
 
-  async login(data: CreateUserDto): Promise<IToken> {
+  public async login(data: UserLoginDto): Promise<IToken> {
     try {
-      return await this.validateUser(data);
-    } catch (e) {
-      throw new HttpException("User isn't register", HttpStatus.UNAUTHORIZED);
-    }
-  }
-
-  async loginSocial(data: CreateLoginSocialDto): Promise<IToken> {
-    try {
-      const oAuthClient = new OAuth2Client(
-        GOOGLE_CLIENT_ID,
-        GOOGLE_CLIENT_SECRET,
-      );
-
-      const result = oAuthClient.verifyIdToken({ idToken: data.accessToken });
-
-      const tokenPayload = (await result).getPayload();
-
-      const token = this.singIn({ id: Number(tokenPayload.sub) });
-      return { token };
-    } catch (e) {
-      throw new HttpException('Google auth failed', HttpStatus.UNAUTHORIZED);
-    }
-  }
-
-  private async validateUser(data: CreateUserDto): Promise<IToken> {
-    const user = await this.getByEmail(data.email);
-    const isMatch = await this.compareHash(data.password, user.password);
-    if (isMatch) {
-      const token = this.singIn({
-        id: user.id,
-        email: user.email,
-        roles: user.roles,
+      const findUser = await this.userRepository.findOne({
+        where: { email: data.email },
       });
-
-      await this.redisClient.setEx(token, 1000, token);
+      await this.comparePassword(data.password, findUser.password);
+      const token = this.signIn({ email: findUser.email });
+      await this.redisClient.setEx(token, 1000000, token);
       return { token };
+    } catch (err) {
+      throw new HttpException(
+        'Email or password is wrong!',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
-    throw new UnauthorizedException('Incorrect password or email');
   }
 
-  async compareHash(password: string, hash: string): Promise<boolean> {
-    return await bcrypt.compare(password, hash);
+  public signIn(data: any): string {
+    return this.jwtService.sign(data);
   }
 
-  async getHash(password: string): Promise<string> {
-    return await bcrypt.hash(password, 5);
-  }
-  async isUserExist(data: EJwtPayload): Promise<User> {
-    const user = await this.userRepository.findOne({
+  public async validateUser(data): Promise<UserEntity> {
+    const findUser = await this.userRepository.findOne({
       where: {
-        id: Number(data.id),
+        email: data.email,
       },
+      relations: { roles: true, posts: true },
     });
-    if (!user) {
-      throw new UnauthorizedException();
+
+    if (!findUser) {
+      throw new UnprocessableEntityException('User entity not found');
     }
-    return user;
-  }
-  singIn(payload: EJwtPayload): string {
-    try {
-      return this.jwtService.sign(payload);
-    } catch (e) {
-      console.log(e);
-      throw new UnauthorizedException();
-    }
+    return findUser;
   }
 
-  async verifyToken(token: string): Promise<EJwtPayload> {
+  public async decode(token: string): Promise<any> {
     try {
-      return this.jwtService.verify(token);
-    } catch (e) {
-      console.log(new Date().toISOString(), token);
-      throw new UnauthorizedException();
+      return this.jwtService.decode(token);
+    } catch (err) {
+      Logger.error(err);
     }
   }
-
-  async getByEmail(email: string) {
-    return await this.userRepository.findOne({
-      where: { email },
-      relations: ['roles'],
-    });
+  public async comparePassword(
+    newPassword: string,
+    oldPassword: string,
+  ): Promise<boolean> {
+    return await bcrypt.compare(newPassword, oldPassword);
   }
 }

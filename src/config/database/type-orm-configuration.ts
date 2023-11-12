@@ -1,42 +1,24 @@
 import { TypeOrmModuleAsyncOptions } from '@nestjs/typeorm';
-import { PostgresqlConfigModule } from './config.module';
-import { PostgresqlConfigService } from './configuration.service';
-import { DataSourceOptions } from 'typeorm';
-import { PostgresqlConfigServiceStatic } from './configuration.service-static';
+import { CommonConfigModule } from './config.module';
+import { CommonConfigService } from './configuration.service';
 
 export class TypeOrmConfiguration {
   static get config(): TypeOrmModuleAsyncOptions {
     return {
-      imports: [PostgresqlConfigModule],
-      useFactory: (configService: PostgresqlConfigService) => ({
+      imports: [CommonConfigModule],
+      useFactory: (commonConfigService: CommonConfigService) => ({
         type: 'postgres',
-        host: configService.host,
-        port: configService.port,
-        username: configService.user,
-        password: configService.password,
-        database: configService.database,
+        host: commonConfigService.host,
+        port: commonConfigService.port,
+        username: commonConfigService.user,
+        password: commonConfigService.password,
+        database: commonConfigService.database,
         synchronize: false,
+        migrationsRun: false,
         entities: [`${process.cwd()}/**/*.entity{.js, .ts}`],
         migrationsTableName: 'migrations',
       }),
-      inject: [PostgresqlConfigService],
-    };
-  }
-}
-
-export class TypeOrmConfigurationStatic {
-  static get staticConfig(): DataSourceOptions {
-    return {
-      type: 'postgres',
-      host: PostgresqlConfigServiceStatic.host,
-      port: PostgresqlConfigServiceStatic.port,
-      username: PostgresqlConfigServiceStatic.user,
-      password: PostgresqlConfigServiceStatic.password,
-      database: PostgresqlConfigServiceStatic.database,
-      synchronize: false,
-      entities: [`${process.cwd()}/**/*.entity.ts`],
-      migrations: ['src/database/migrations/*.ts'],
-      migrationsTableName: 'migrations',
+      inject: [CommonConfigService],
     };
   }
 }
