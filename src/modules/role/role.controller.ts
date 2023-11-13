@@ -60,10 +60,10 @@ export class RoleController {
   @Post('/:userId')
   async addRoleById(
     @Param('userId') userId: string,
-    @Body() value: CreateRoleDto,
+    @Body() role: CreateRoleDto,
   ): Promise<string> {
-    await this.roleService.addRoleToUserBy(userId, value);
-    return `The role ${value} has been added`;
+    await this.roleService.addRoleToUserBy(userId, role);
+    return `The role ${role.value} has been added`;
   }
 
   @ApiOperation({ summary: ' Delete the role' })

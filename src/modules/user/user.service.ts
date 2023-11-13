@@ -7,7 +7,6 @@ import {
 
 import { IList } from '../../common/interface/list.interface';
 import { UserEntity } from '../../database/entities/user.entity';
-import { UserCreateRequestDto } from './dto/request/user.create-request.dto';
 import { UserUpdateRequestDto } from './dto/request/user.update-request.dto';
 import { UserListQueryRequestDto } from './dto/request/user-list-query.request.dto';
 import { BanStatusEnum } from './enum/ban-status.enum';
@@ -43,10 +42,6 @@ export class UserService {
   public async deleteUser(userId: string): Promise<void> {
     const findUser = await this.findUserOrException(userId);
     await this.userRepository.remove(findUser);
-  }
-
-  public async saveUser(user: UserCreateRequestDto): Promise<UserEntity> {
-    return await this.userRepository.save(user);
   }
 
   public async banStatus(userId: string, status: string): Promise<UserEntity> {

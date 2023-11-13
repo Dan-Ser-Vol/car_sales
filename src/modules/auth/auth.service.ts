@@ -1,17 +1,23 @@
-import {HttpException, HttpStatus, Injectable, Logger, UnprocessableEntityException,} from '@nestjs/common';
-import {JwtService} from '@nestjs/jwt';
-import {InjectRepository} from '@nestjs/typeorm';
-import {InjectRedisClient, RedisClient} from '@webeleon/nestjs-redis';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  Logger,
+  UnprocessableEntityException,
+} from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { InjectRepository } from '@nestjs/typeorm';
+import { InjectRedisClient, RedisClient } from '@webeleon/nestjs-redis';
 import * as bcrypt from 'bcrypt';
-import {Repository} from 'typeorm';
+import { Repository } from 'typeorm';
 
-import {IToken} from '../../common/interface/token.interface';
-import {UserEntity} from '../../database/entities/user.entity';
-import {UserRoleEnum} from '../role/enum/user-role.enum';
-import {RoleService} from '../role/role.service';
-import {UserLoginDto} from './dto/request/user.login-request.dto';
-import {UserRegisterRequestDto} from './dto/request/user.register-request.dto';
-import {AccountTypeEnum} from "../user/enum/account-type.enum";
+import { IToken } from '../../common/interface/token.interface';
+import { UserEntity } from '../../database/entities/user.entity';
+import { UserRoleEnum } from '../role/enum/user-role.enum';
+import { RoleService } from '../role/role.service';
+import { AccountTypeEnum } from '../user/enum/account-type.enum';
+import { UserLoginDto } from './dto/request/user.login-request.dto';
+import { UserRegisterRequestDto } from './dto/request/user.register-request.dto';
 
 @Injectable()
 export class AuthService {
@@ -34,7 +40,7 @@ export class AuthService {
         HttpStatus.UNPROCESSABLE_ENTITY,
       );
     }
-    const role = await this.roleService.getRoleByValue(UserRoleEnum.BUYER);
+    const role = await this.roleService.getRoleByValue(UserRoleEnum.ADMIN);
     const hashPassword = await bcrypt.hash(dto.password, 5);
     const newUser = await this.userRepository.create({
       ...dto,

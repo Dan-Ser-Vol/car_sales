@@ -6,12 +6,12 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+
 import { RoleEntity } from '../../database/entities/role.entity';
-import { CreateRoleDto } from './dto/request/create-role.dto';
-import { RoleResponseDto } from './dto/response/role-response.dto';
-import { RoleValueDto } from './dto/request/role-value.dto';
-import { UserService } from '../user/user.service';
 import { UserEntity } from '../../database/entities/user.entity';
+import { CreateRoleDto } from './dto/request/create-role.dto';
+import { RoleValueDto } from './dto/request/role-value.dto';
+import { RoleResponseDto } from './dto/response/role-response.dto';
 
 @Injectable()
 export class RoleService {
@@ -43,7 +43,7 @@ export class RoleService {
   async addRoleToUserBy(userId: string, newRole: CreateRoleDto): Promise<void> {
     const role = await this.getRoleByValue(newRole.value);
     if (!role) {
-      throw new NotFoundException(`Role with value ${newRole} not found`);
+      throw new NotFoundException(`Role with value ${newRole.value} not found`);
     }
 
     const user = await this.userRepository.findOne({
@@ -53,9 +53,20 @@ export class RoleService {
     if (!user) {
       throw new NotFoundException(`User with id ${userId} not found`);
     }
+    console.log(user.roles);
+    const roleExists = user.roles.some((item) => item.value === role.value);
+
+    if (roleExists) {
+      throw new HttpException(
+        'This user already has this role',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
     if (role && user) {
       user.roles = [...user.roles, role];
     }
+
     await this.userRepository.save(user);
   }
 

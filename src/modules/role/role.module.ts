@@ -1,15 +1,16 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { PassportModule } from '@nestjs/passport';
-import { RoleService } from './role.service';
-import { RoleController } from './role.controller';
-import { RoleEntity } from '../../database/entities/role.entity';
 import { JwtModule } from '@nestjs/jwt';
+import { PassportModule } from '@nestjs/passport';
+import { TypeOrmModule } from '@nestjs/typeorm';
+
 import { CommonConfigModule } from '../../config/database/config.module';
 import { CommonConfigService } from '../../config/database/configuration.service';
+import { RoleEntity } from '../../database/entities/role.entity';
+import { UserEntity } from '../../database/entities/user.entity';
 import { UserModule } from '../user/user.module';
 import { UserService } from '../user/user.service';
-import { UserEntity } from '../../database/entities/user.entity';
+import { RoleController } from './role.controller';
+import { RoleService } from './role.service';
 
 @Module({
   imports: [

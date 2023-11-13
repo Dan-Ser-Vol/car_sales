@@ -85,7 +85,7 @@ export class CarPostService {
     const posts = await this.carPostRepository.find({
       where: { user: { id: userId } },
     });
-    if (!posts) {
+    if (!posts.length) {
       throw new HttpException(
         'This user has no posts yet',
         HttpStatus.NOT_FOUND,

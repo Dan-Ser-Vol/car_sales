@@ -1,5 +1,4 @@
-
-import {RoleEntity} from "../../database/entities/role.entity";
+import { RoleEntity } from '../../database/entities/role.entity';
 import { RoleResponseDto } from './dto/response/role-response.dto';
 
 export class RoleResponseMapper {

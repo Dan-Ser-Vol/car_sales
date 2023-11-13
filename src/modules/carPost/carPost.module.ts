@@ -1,17 +1,23 @@
 import { Module } from '@nestjs/common';
-import { CarPostController } from './carPost.controller';
-import { CarPostService } from './carPost.service';
+import { PassportModule } from '@nestjs/passport';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { CarPostRepository } from './carPost.repository';
-import { AuthModule } from '../auth/auth.module';
+
 import { CarPostEntity } from '../../database/entities/carPost.entity';
-import { UserModule } from '../user/user.module';
+import { AuthModule } from '../auth/auth.module';
 import { FilesModule } from '../files/files.module';
 import { FilesService } from '../files/files.service';
+import { UserModule } from '../user/user.module';
+import { CarPostController } from './carPost.controller';
+import { CarPostRepository } from './carPost.repository';
+import { CarPostService } from './carPost.service';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([CarPostEntity]),
+    PassportModule.register({
+      defaultStrategy: 'bearer',
+      property: 'user',
+    }),
     AuthModule,
     UserModule,
     FilesModule,

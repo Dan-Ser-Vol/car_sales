@@ -31,7 +31,7 @@ export class AccountTypeGuard implements CanActivate {
 
     if (!userTypeAllowed.includes(user.accountType)) {
       throw new HttpException(
-        'Access denied, Because you have basic account!',
+        'Access denied! Because you have basic account!',
         HttpStatus.FORBIDDEN,
       );
     }

@@ -1,16 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 import {
   IsEmail,
   IsNotEmpty,
-  IsNumber,
   IsString,
   Matches,
-  Max,
   MaxLength,
-  Min,
   MinLength,
 } from 'class-validator';
-import { Transform } from 'class-transformer';
 
 export class UserRegisterRequestDto {
   @ApiProperty()

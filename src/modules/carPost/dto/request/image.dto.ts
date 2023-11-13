@@ -8,13 +8,5 @@ export class ImageDto {
   })
   @IsString()
   @IsOptional()
-  name: string;
-
-  @ApiProperty({
-    example: 'taz.png',
-    description: 'Add an image using form-data! ',
-  })
-  @IsString()
-  @IsOptional()
   image: string;
 }

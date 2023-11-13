@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
+
+import { IList } from '../../common/interface/list.interface';
 import { UserEntity } from '../../database/entities/user.entity';
 import { UserListQueryRequestDto } from './dto/request/user-list-query.request.dto';
-import { IList } from '../../common/interface/list.interface';
 import { UserListOrderFieldEnum } from './enum/user-list-order-field.enum';
 
 @Injectable()
