@@ -37,7 +37,16 @@ export class RoleService {
   }
 
   async getRoleByValue(value): Promise<RoleEntity> {
-    return await this.roleRepository.findOne({ where: { value } });
+    const role = await this.roleRepository.findOne({ where: { value } });
+    if (role) {
+      return role;
+    } else {
+      const newRole = this.roleRepository.create({
+        value,
+        description: `${value} role`,
+      });
+      return this.roleRepository.save(newRole);
+    }
   }
 
   async addRoleToUserBy(userId: string, newRole: CreateRoleDto): Promise<void> {
@@ -53,7 +62,7 @@ export class RoleService {
     if (!user) {
       throw new NotFoundException(`User with id ${userId} not found`);
     }
-    console.log(user.roles);
+
     const roleExists = user.roles.some((item) => item.value === role.value);
 
     if (roleExists) {

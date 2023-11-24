@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 
+import { AccountTypeEnum } from '../../modules/user/enum/account-type.enum';
 import { ACCOUNT_TYPE_KEY } from '../decorators/account-type.decorator';
 
 @Injectable()
@@ -14,12 +15,12 @@ export class AccountTypeGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
-    let userTypeAllowed = this.reflector.get<string[]>(
+    let userTypeAllowed = this.reflector.get<AccountTypeEnum[]>(
       ACCOUNT_TYPE_KEY,
       context.getHandler(),
     );
     if (!userTypeAllowed) {
-      userTypeAllowed = this.reflector.get<string[]>(
+      userTypeAllowed = this.reflector.get<AccountTypeEnum[]>(
         ACCOUNT_TYPE_KEY,
         context.getClass(),
       );

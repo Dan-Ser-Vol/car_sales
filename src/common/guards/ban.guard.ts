@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 
+import { BanStatusEnum } from '../../modules/user/enum/ban-status.enum';
 import { BAN_KEY } from '../decorators/ban.decorator';
 
 @Injectable()
@@ -14,12 +15,12 @@ export class BanUserGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
-    let userTypeAllowed = this.reflector.get<string[]>(
+    let userTypeAllowed = this.reflector.get<BanStatusEnum[]>(
       BAN_KEY,
       context.getHandler(),
     );
     if (!userTypeAllowed) {
-      userTypeAllowed = this.reflector.get<string[]>(
+      userTypeAllowed = this.reflector.get<BanStatusEnum[]>(
         BAN_KEY,
         context.getClass(),
       );

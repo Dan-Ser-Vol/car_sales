@@ -2,7 +2,6 @@ import {
   HttpException,
   HttpStatus,
   Injectable,
-  Logger,
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -40,9 +39,11 @@ export class AuthService {
         HttpStatus.UNPROCESSABLE_ENTITY,
       );
     }
-    const role = await this.roleService.getRoleByValue(UserRoleEnum.ADMIN);
+
+    const role = await this.roleService.getRoleByValue(UserRoleEnum.BUYER);
+
     const hashPassword = await bcrypt.hash(dto.password, 5);
-    const newUser = await this.userRepository.create({
+    const newUser = this.userRepository.create({
       ...dto,
       accountType: AccountTypeEnum.BASIC,
       roles: [role],
@@ -89,13 +90,6 @@ export class AuthService {
     return findUser;
   }
 
-  public async decode(token: string): Promise<any> {
-    try {
-      return this.jwtService.decode(token);
-    } catch (err) {
-      Logger.error(err);
-    }
-  }
   public async comparePassword(
     newPassword: string,
     oldPassword: string,
