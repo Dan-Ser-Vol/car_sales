@@ -9,7 +9,6 @@ import {
   Post,
   Put,
   Query,
-  Request,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -24,10 +23,12 @@ import {
 } from '@nestjs/swagger';
 
 import { AccountTypeDecorator } from '../../common/decorators/account-type.decorator';
+import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { RolesDecorator } from '../../common/decorators/role.decorator';
 import { AccountTypeGuard } from '../../common/guards/account-type.guard';
 import { BadWordsGuard } from '../../common/guards/bad-words.guard';
 import { RolesGuard } from '../../common/guards/role.guard';
+import { UserEntity } from '../../database/entities/user.entity';
 import { UserRoleEnum } from '../role/enum/user-role.enum';
 import { AccountTypeEnum } from '../user/enum/account-type.enum';
 import { CarPostResponseMapper } from './carPost.response.mapper';
@@ -45,7 +46,7 @@ import { CarPostDetailsResponseDto } from './dto/response/carPost-details-respon
 export class CarPostController {
   constructor(private carPostService: CarPostService) {}
 
-  // @RolesDecorator(UserRoleEnum.SELLER, UserRoleEnum.ADMIN, UserRoleEnum.MANAGER)
+  @RolesDecorator(UserRoleEnum.SELLER, UserRoleEnum.ADMIN, UserRoleEnum.MANAGER)
   @ApiOperation({ summary: 'Create new post' })
   @ApiResponse({
     status: 200,
@@ -54,14 +55,14 @@ export class CarPostController {
   })
   @Post('create')
   async createCar(
-    @Request() req: any,
+    @CurrentUser() user: UserEntity,
     @Body() data: CarPostCreateDto,
   ): Promise<CarPostDetailsResponseDto> {
     try {
-      const result = await this.carPostService.createPost(data, req.user.id);
+      const result = await this.carPostService.createPost(data, user.id);
       return CarPostResponseMapper.toDetailsDto(result);
     } catch (err) {
-      console.log(err);
+      throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 

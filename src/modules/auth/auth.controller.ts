@@ -10,6 +10,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { BanDecorator } from '../../common/decorators/ban.decorator';
+import { BadWordsGuard } from '../../common/guards/bad-words.guard';
 import { BanUserGuard } from '../../common/guards/ban.guard';
 import { LogoutGuard } from '../../common/guards/logout.guard';
 import { IToken } from '../../common/interface/token.interface';
@@ -21,6 +22,7 @@ import { UserRegisterRequestDto } from './dto/request/user.register-request.dto'
 import { UserRegisterResponseDto } from './dto/response/user.register-response.dto';
 
 @ApiTags('Auth')
+@UseGuards(BadWordsGuard)
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}

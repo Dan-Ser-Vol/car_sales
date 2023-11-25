@@ -31,7 +31,10 @@ export class RolesGuard implements CanActivate {
     const user = request.user;
 
     if (!user.roles.some((role) => userTypeAllowed.includes(role.value))) {
-      throw new HttpException('Access denied.', HttpStatus.FORBIDDEN);
+      throw new HttpException(
+        'Access denied because you have the wrong role',
+        HttpStatus.FORBIDDEN,
+      );
     }
 
     return true;

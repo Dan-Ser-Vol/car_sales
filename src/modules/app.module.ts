@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { TypeOrmConfiguration } from '../config/database/type-orm-configuration';
 import { AuthModule } from './auth/auth.module';
+import { AuthConfigModule } from './auth-config/auth-config.module';
 import { CarPostModule } from './carPost/carPost.module';
 import { FilesModule } from './files/files.module';
 import { RoleModule } from './role/role.module';
@@ -16,6 +17,7 @@ import { UserModule } from './user/user.module';
     RoleModule,
     CarPostModule,
     FilesModule,
+    AuthConfigModule,
   ],
 })
 export class AppModule {}

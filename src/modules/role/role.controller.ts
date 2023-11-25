@@ -18,6 +18,7 @@ import {
 } from '@nestjs/swagger';
 
 import { RolesDecorator } from '../../common/decorators/role.decorator';
+import { BadWordsGuard } from '../../common/guards/bad-words.guard';
 import { RolesGuard } from '../../common/guards/role.guard';
 import { CreateRoleDto } from './dto/request/create-role.dto';
 import { RoleValueDto } from './dto/request/role-value.dto';
@@ -28,7 +29,7 @@ import { RoleService } from './role.service';
 @ApiTags('Roles')
 @Controller('roles')
 @ApiBearerAuth()
-@UseGuards(AuthGuard(), RolesGuard)
+@UseGuards(AuthGuard(), RolesGuard, BadWordsGuard)
 @RolesDecorator(UserRoleEnum.ADMIN, UserRoleEnum.MANAGER)
 export class RoleController {
   constructor(private readonly roleService: RoleService) {}

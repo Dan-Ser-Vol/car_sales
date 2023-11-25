@@ -8,6 +8,7 @@ import { CommonConfigModule } from '../../config/database/config.module';
 import { CommonConfigService } from '../../config/database/configuration.service';
 import { RoleEntity } from '../../database/entities/role.entity';
 import { UserEntity } from '../../database/entities/user.entity';
+import { AuthConfigModule } from '../auth-config/auth-config.module';
 import { RoleModule } from '../role/role.module';
 import { RoleService } from '../role/role.service';
 import { AuthController } from './auth.controller';
@@ -16,35 +17,12 @@ import { BearerStrategy } from './bearer.strategy';
 
 @Module({
   imports: [
-    RedisModule,
-    PassportModule.register({
-      defaultStrategy: 'bearer',
-      property: 'user',
-    }),
     TypeOrmModule.forFeature([UserEntity, RoleEntity]),
-    RedisModule.forRootAsync({
-      imports: [CommonConfigModule],
-      useFactory: async (commonConfigService: CommonConfigService) => {
-        return {
-          url: commonConfigService.redis_url,
-        };
-      },
-      inject: [CommonConfigService],
-    }),
-    JwtModule.registerAsync({
-      imports: [CommonConfigModule],
-      useFactory: async (commonConfigService: CommonConfigService) => ({
-        secret: commonConfigService.jwt_secret,
-        signOptions: {
-          expiresIn: commonConfigService.jwt_expires_in,
-        },
-      }),
-      inject: [CommonConfigService],
-    }),
+    AuthConfigModule,
     RoleModule,
   ],
   providers: [AuthService, BearerStrategy, RoleService],
   controllers: [AuthController],
-  exports: [AuthService, PassportModule],
+  exports: [AuthService],
 })
 export class AuthModule {}

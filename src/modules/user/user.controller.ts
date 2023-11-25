@@ -20,6 +20,7 @@ import {
 } from '@nestjs/swagger';
 
 import { RolesDecorator } from '../../common/decorators/role.decorator';
+import { BadWordsGuard } from '../../common/guards/bad-words.guard';
 import { RolesGuard } from '../../common/guards/role.guard';
 import { UserRoleEnum } from '../role/enum/user-role.enum';
 import { UserUpdateRequestDto } from './dto/request/user.update-request.dto';
@@ -31,6 +32,7 @@ import { UserResponseMapper } from './user.response.mapper';
 import { UserService } from './user.service';
 
 @ApiTags('Users')
+@UseGuards(BadWordsGuard)
 @Controller('users')
 export class UserController {
   constructor(private userService: UserService) {}
@@ -90,6 +92,7 @@ export class UserController {
     UserRoleEnum.BUYER,
     UserRoleEnum.SELLER,
   )
+  @UseGuards(BadWordsGuard)
   @ApiOperation({ summary: 'update user by id' })
   @ApiResponse({
     status: 200,

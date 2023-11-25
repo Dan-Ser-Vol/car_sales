@@ -7,6 +7,7 @@ import * as process from 'process';
 import { SwaggerHelper } from './common/helper/swagger.helper';
 import { CommonConfigService } from './config/database/configuration.service';
 import { AppModule } from './modules/app.module';
+import {PassportModule} from "@nestjs/passport";
 
 const environment = process.env.NODE_ENV ?? '';
 
@@ -15,6 +16,7 @@ dotenv.config({ path: `environments/${environment}.env` });
 async function start() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
+
   const appConfig: CommonConfigService = app.get(CommonConfigService);
   const config = new DocumentBuilder()
     .setTitle('Car Sales Platform API')
