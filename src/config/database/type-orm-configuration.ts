@@ -1,4 +1,5 @@
 import { TypeOrmModuleAsyncOptions } from '@nestjs/typeorm';
+
 import { CommonConfigModule } from './config.module';
 import { CommonConfigService } from './configuration.service';
 

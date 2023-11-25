@@ -5,11 +5,14 @@ import {
   NotFoundException,
   UnprocessableEntityException,
 } from '@nestjs/common';
+import { InjectEntityManager } from '@nestjs/typeorm';
 import * as fs from 'fs';
 import * as path from 'path';
+import { EntityManager } from 'typeorm';
 
 import { IList } from '../../common/interface/list.interface';
 import { CarPostEntity } from '../../database/entities/carPost.entity';
+import { UserEntity } from '../../database/entities/user.entity';
 import { FilesService } from '../files/files.service';
 import { UserRepository } from '../user/user.repository';
 import { CarPostRepository } from './carPost.repository';
@@ -22,6 +25,7 @@ import { CarPostDetailsResponseDto } from './dto/response/carPost-details-respon
 @Injectable()
 export class CarPostService {
   constructor(
+    @InjectEntityManager() private readonly entityManager: EntityManager,
     private readonly carPostRepository: CarPostRepository,
     private readonly userRepository: UserRepository,
     private readonly filesService: FilesService,
@@ -31,16 +35,20 @@ export class CarPostService {
     data: CarPostCreateDto,
     userId: string,
   ): Promise<CarPostDetailsResponseDto> {
-    const user = await this.userRepository.findOne({ where: { id: userId } });
-    if (!user) {
-      throw new NotFoundException(`User with id ${userId} not found`);
-    }
-    const newPost = this.carPostRepository.create({
-      ...data,
-      user: user,
-    });
+    return await this.entityManager.transaction(async (em) => {
+      const carPostRepository = em.getRepository(CarPostEntity);
+      const userRepository = em.getRepository(UserEntity);
+      const user = await userRepository.findOne({ where: { id: userId } });
+      if (!user) {
+        throw new NotFoundException(`User with id ${userId} not found`);
+      }
+      const newPost = carPostRepository.create({
+        ...data,
+        user: user,
+      });
 
-    return await this.carPostRepository.save(newPost);
+      return await carPostRepository.save(newPost);
+    });
   }
 
   public async getAll(

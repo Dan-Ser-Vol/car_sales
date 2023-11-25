@@ -1,11 +1,6 @@
 import { Module } from '@nestjs/common';
-import { JwtModule } from '@nestjs/jwt';
-import { PassportModule } from '@nestjs/passport';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { RedisModule } from '@webeleon/nestjs-redis';
 
-import { CommonConfigModule } from '../../config/database/config.module';
-import { CommonConfigService } from '../../config/database/configuration.service';
 import { RoleEntity } from '../../database/entities/role.entity';
 import { UserEntity } from '../../database/entities/user.entity';
 import { AuthConfigModule } from '../auth-config/auth-config.module';
@@ -17,7 +12,7 @@ import { BearerStrategy } from './bearer.strategy';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([UserEntity, RoleEntity]),
+    TypeOrmModule.forFeature([UserEntity, RoleEntity, RoleService]),
     AuthConfigModule,
     RoleModule,
   ],

@@ -99,7 +99,7 @@ export class UserController {
     description: 'Successful response',
     type: UserUpdateResponseDto,
   })
-  @Put('update/:userId')
+  @Put(':userId')
   async updateUser(
     @Param('userId') userId: string,
     @Body() data: UserUpdateRequestDto,
@@ -119,7 +119,7 @@ export class UserController {
     description: 'Successful response',
     type: UserDetailsResponseDto,
   })
-  @Post('ban/:userId')
+  @Post(':userId/ban')
   async ban(
     @Param('userId') userId: string,
     @Body('status') status: string,
@@ -134,7 +134,7 @@ export class UserController {
     status: 200,
     description: 'Successful response',
   })
-  @Delete('delete/:userId')
+  @Delete(':userId')
   async deleteUser(@Param('userId') userId: string): Promise<void> {
     try {
       await this.userService.deleteUser(userId);

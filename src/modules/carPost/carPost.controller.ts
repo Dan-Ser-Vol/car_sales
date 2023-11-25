@@ -53,7 +53,7 @@ export class CarPostController {
     description: 'Successful response',
     type: CarPostDetailsResponseDto,
   })
-  @Post('create')
+  @Post()
   async createCar(
     @CurrentUser() user: UserEntity,
     @Body() data: CarPostCreateDto,
@@ -99,7 +99,7 @@ export class CarPostController {
     type: CarPostDetailsResponseDto,
   })
   @UseInterceptors(FileInterceptor('image'))
-  @Post('image/:postId')
+  @Post(':postId/image')
   async addImageToPost(
     @Param('postId') postId: string,
     @UploadedFile() image: ImageDto,
@@ -119,7 +119,7 @@ export class CarPostController {
     status: 200,
     description: 'Successful response',
   })
-  @Delete('image/:postId')
+  @Delete(':postId/image')
   async DeleteImageToPost(
     @Param('postId') postId: string,
     @Body('image') image: ImageDto,
@@ -186,7 +186,7 @@ export class CarPostController {
     description: 'The post has been updated',
     type: CarPostDetailsResponseDto,
   })
-  @Put('update/:postId')
+  @Put(':postId')
   async updateCarPost(
     @Param('postId') postId: string,
     @Body() body: CarPostUpdateDto,

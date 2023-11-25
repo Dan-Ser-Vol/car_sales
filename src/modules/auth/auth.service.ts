@@ -5,10 +5,10 @@ import {
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { InjectRepository } from '@nestjs/typeorm';
+import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
 import { InjectRedisClient, RedisClient } from '@webeleon/nestjs-redis';
 import * as bcrypt from 'bcrypt';
-import { Repository } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 
 import { IToken } from '../../common/interface/token.interface';
 import { UserEntity } from '../../database/entities/user.entity';
@@ -27,32 +27,37 @@ export class AuthService {
     @InjectRedisClient()
     private readonly redisClient: RedisClient,
     private readonly jwtService: JwtService,
+    @InjectEntityManager() private readonly entityManager: EntityManager,
   ) {}
 
   public async register(dto: UserRegisterRequestDto): Promise<UserEntity> {
-    const findUser = await this.userRepository.findOneBy({
-      email: dto.email,
-    });
-    if (findUser) {
-      throw new HttpException(
-        'User already exist',
-        HttpStatus.UNPROCESSABLE_ENTITY,
-      );
-    }
+    return await this.entityManager.transaction(async (em) => {
+      const userRepository = em.getRepository(UserEntity);
 
-    const role = await this.roleService.getRoleByValue(UserRoleEnum.BUYER);
+      const findUser = await userRepository.findOneBy({
+        email: dto.email,
+      });
+      if (findUser) {
+        throw new HttpException(
+          'User already exist',
+          HttpStatus.UNPROCESSABLE_ENTITY,
+        );
+      }
 
-    const hashPassword = await bcrypt.hash(dto.password, 5);
-    const newUser = this.userRepository.create({
-      ...dto,
-      accountType: AccountTypeEnum.BASIC,
-      roles: [role],
-      password: hashPassword,
+      const role = await this.roleService.getRoleByValue(UserRoleEnum.BUYER);
+
+      const hashPassword = await bcrypt.hash(dto.password, 5);
+      const newUser = this.userRepository.create({
+        ...dto,
+        accountType: AccountTypeEnum.BASIC,
+        roles: [role],
+        password: hashPassword,
+      });
+      const token = this.signIn({ email: newUser.email });
+      await this.redisClient.setEx(token, 10000, token);
+      newUser.token = token;
+      return await userRepository.save(newUser);
     });
-    const token = this.signIn({ email: newUser.email });
-    await this.redisClient.setEx(token, 10000, token);
-    newUser.token = token;
-    return await this.userRepository.save(newUser);
   }
 
   public async login(data: UserLoginDto): Promise<IToken> {

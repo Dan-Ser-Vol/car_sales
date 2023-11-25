@@ -51,14 +51,14 @@ export class RoleController {
     description: 'Successful response',
     type: RoleResponseDto,
   })
-  @Get('/:value')
+  @Get(':value')
   getByValue(@Param('value') value: RoleValueDto): Promise<RoleResponseDto> {
     return this.roleService.getRoleByValue(value);
   }
 
   @ApiOperation({ summary: 'Add new role to user' })
   @ApiResponse({ status: 200, description: 'Successful response' })
-  @Post('/:userId')
+  @Post(':userId')
   async addRoleById(
     @Param('userId') userId: string,
     @Body() role: CreateRoleDto,
@@ -69,7 +69,7 @@ export class RoleController {
 
   @ApiOperation({ summary: ' Delete the role' })
   @ApiResponse({ status: 200, description: 'Successful response' })
-  @Delete('delete/:value')
+  @Delete(':value')
   async deleteUser(@Param('value') value: RoleValueDto): Promise<string> {
     try {
       await this.roleService.deleteRoleByValue(value);
