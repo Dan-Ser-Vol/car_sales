@@ -1,3 +1,5 @@
+import * as process from 'process';
+
 import { IList } from '../../common/interface/list.interface';
 import { CarPostEntity } from '../../database/entities/carPost.entity';
 import { CarPostBaseDto } from './dto/request/carPost-base.dto';
@@ -47,7 +49,9 @@ export class CarPostResponseMapper {
       brand: data.brand,
       model: data.model,
       year: data.year,
-      image: data.image,
+      image: data.image.map(
+        (item) => `${process.env.GOOGLE_CLOUD_BUCKET_URL}${item}`,
+      ),
       mileage: data.mileage,
       bodyType: data.bodyType,
       status: data.status,

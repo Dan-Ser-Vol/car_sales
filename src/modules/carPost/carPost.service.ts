@@ -13,12 +13,10 @@ import { EntityManager } from 'typeorm';
 import { IList } from '../../common/interface/list.interface';
 import { CarPostEntity } from '../../database/entities/carPost.entity';
 import { UserEntity } from '../../database/entities/user.entity';
-import { FilesService } from '../files/files.service';
-import { UserRepository } from '../user/user.repository';
+import { AccountTypeEnum } from '../user/enum/account-type.enum';
 import { CarPostRepository } from './carPost.repository';
 import { CarPostCreateDto } from './dto/request/carPost-create.dto';
 import { CarPostUpdateDto } from './dto/request/carPost-update.dto';
-import { ImageDto } from './dto/request/image.dto';
 import { PostListQueryRequestDto } from './dto/request/post-list-query.request.dto';
 import { CarPostDetailsResponseDto } from './dto/response/carPost-details-response.dto';
 
@@ -27,8 +25,6 @@ export class CarPostService {
   constructor(
     @InjectEntityManager() private readonly entityManager: EntityManager,
     private readonly carPostRepository: CarPostRepository,
-    private readonly userRepository: UserRepository,
-    private readonly filesService: FilesService,
   ) {}
 
   public async createPost(
@@ -38,9 +34,18 @@ export class CarPostService {
     return await this.entityManager.transaction(async (em) => {
       const carPostRepository = em.getRepository(CarPostEntity);
       const userRepository = em.getRepository(UserEntity);
-      const user = await userRepository.findOne({ where: { id: userId } });
+      const user = await userRepository.findOne({
+        where: { id: userId },
+        relations: { posts: true },
+      });
       if (!user) {
         throw new NotFoundException(`User with id ${userId} not found`);
+      }
+      if (user.posts.length && user.accountType === AccountTypeEnum.BASIC) {
+        throw new HttpException(
+          'Users with a basic account cannot create more than one post. Please purchase a premium account',
+          HttpStatus.FORBIDDEN,
+        );
       }
       const newPost = carPostRepository.create({
         ...data,
@@ -63,17 +68,18 @@ export class CarPostService {
 
   public async addImageToPost(
     postId: string,
-    image: ImageDto,
+    files: Express.Multer.File[],
   ): Promise<CarPostDetailsResponseDto> {
     try {
-      const fileName = await this.filesService.createFile(image);
       const findPost = await this.carPostRepository.findOneBy({
         id: postId,
       });
 
       if (!findPost)
         throw new NotFoundException(`Car post with id ${postId} not found`);
-      findPost.image.push(fileName);
+
+      const fileNames = files.map((file) => file.filename);
+      findPost.image = findPost.image.concat(fileNames);
 
       return await this.carPostRepository.save(findPost);
     } catch (err) {

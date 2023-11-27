@@ -9,18 +9,19 @@ import {
   Post,
   Put,
   Query,
-  UploadedFile,
+  UploadedFiles,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FilesInterceptor } from '@nestjs/platform-express';
 import {
   ApiBearerAuth,
   ApiOperation,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import * as multerGoogleCloudStorage from 'multer-google-storage';
 
 import { AccountTypeDecorator } from '../../common/decorators/account-type.decorator';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
@@ -28,6 +29,7 @@ import { RolesDecorator } from '../../common/decorators/role.decorator';
 import { AccountTypeGuard } from '../../common/guards/account-type.guard';
 import { BadWordsGuard } from '../../common/guards/bad-words.guard';
 import { RolesGuard } from '../../common/guards/role.guard';
+import { storageOptions } from '../../config/multerStorageConfig/multer-storage.config';
 import { UserEntity } from '../../database/entities/user.entity';
 import { UserRoleEnum } from '../role/enum/user-role.enum';
 import { AccountTypeEnum } from '../user/enum/account-type.enum';
@@ -46,7 +48,7 @@ import { CarPostDetailsResponseDto } from './dto/response/carPost-details-respon
 export class CarPostController {
   constructor(private carPostService: CarPostService) {}
 
-  @RolesDecorator(UserRoleEnum.SELLER, UserRoleEnum.ADMIN, UserRoleEnum.MANAGER)
+  // @RolesDecorator(UserRoleEnum.SELLER, UserRoleEnum.ADMIN, UserRoleEnum.MANAGER)
   @ApiOperation({ summary: 'Create new post' })
   @ApiResponse({
     status: 200,
@@ -54,7 +56,7 @@ export class CarPostController {
     type: CarPostDetailsResponseDto,
   })
   @Post()
-  async createCar(
+  async createCarPost(
     @CurrentUser() user: UserEntity,
     @Body() data: CarPostCreateDto,
   ): Promise<CarPostDetailsResponseDto> {
@@ -90,7 +92,7 @@ export class CarPostController {
     }
   }
 
-  @RolesDecorator(UserRoleEnum.SELLER, UserRoleEnum.ADMIN, UserRoleEnum.MANAGER)
+  // @RolesDecorator(UserRoleEnum.SELLER, UserRoleEnum.ADMIN, UserRoleEnum.MANAGER)
   @AccountTypeDecorator(AccountTypeEnum.BASIC)
   @ApiOperation({ summary: 'Add an image to the post' })
   @ApiResponse({
@@ -98,14 +100,18 @@ export class CarPostController {
     description: 'Successful response',
     type: CarPostDetailsResponseDto,
   })
-  @UseInterceptors(FileInterceptor('image'))
   @Post(':postId/image')
+  @UseInterceptors(
+    FilesInterceptor('file', null, {
+      storage: multerGoogleCloudStorage.storageEngine(storageOptions),
+    }),
+  )
   async addImageToPost(
     @Param('postId') postId: string,
-    @UploadedFile() image: ImageDto,
+    @UploadedFiles() files: Express.Multer.File[],
   ): Promise<CarPostDetailsResponseDto> {
     try {
-      const result = await this.carPostService.addImageToPost(postId, image);
+      const result = await this.carPostService.addImageToPost(postId, files);
       return CarPostResponseMapper.toDetailsDto(result);
     } catch (err) {
       throw new HttpException(err.message, HttpStatus.INTERNAL_SERVER_ERROR);

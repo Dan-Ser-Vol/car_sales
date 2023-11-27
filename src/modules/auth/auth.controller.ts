@@ -45,7 +45,6 @@ export class AuthController {
   }
 
   @ApiOperation({ summary: 'Login user' })
-  @UseGuards(AuthGuard(), BanUserGuard)
   @BanDecorator(BanStatusEnum.INACTIVE)
   @ApiResponse({
     status: 200,

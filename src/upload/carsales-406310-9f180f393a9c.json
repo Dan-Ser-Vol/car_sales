@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "carsales-406310",
+  "private_key_id": "9f180f393a9cebee09762bc7166febbae220659d",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCi54cB9zMb7wt/\ngKkHmk9bAcCmN9fguY1/cepOBLkJK5u+3WlqN+2MZxBLiMwE3L+6kP1hkB/G6TK/\nlu08UrhhESh2VRikfAeIBQBkQSANIbAqi3GH9d5yegmhJND8ZbH5t+51XiAcxBcs\nRjqsNyXjDCnC3d42AjquLFifsIGO5nQf+uyiLB+3in/hRHGpHaKlqgRWTPo/K9mf\n8zaFvjc6hJ+ywTdils1hGCpV77LqwlJ5zUEKj9Jo6hhWj8rj5k3fDIXXk3LfktA5\n5wTgOWyljIvA5YwylTxj9ilijarwwdBetI9k+6clPOSEUYqjkh8TnMC3Vgp3iVr0\nLgDOeVP1AgMBAAECggEAAsHa8+JQe+RNpEST99Q5jB+JOHcBASV62uGdduEXFavm\niLI8LsdQDryO1sxzsZBf8WMzWrOjCg2X5YzDKq52vvPYpLoXfu83fGqjQU8l4PsF\nPY8bJpM3huYAZDkYjXEWNFUT5OopLnt2LfJpW1Fao49o5Iq3UGA0yI5pGJjW9Il0\nlcdaBefFML9BvaihZ4RbkOGkQ8+//deVcPzq8qLvO5BWx3KTxxpPXT+Gtlm4NaWw\nDRNG4KWD6KTcZtKnTJZ1Vne6uRNquk2c2+jNWGUe7CFXONRETUEH+jLJJLBYDPtz\ncS+VitEWbyJhV/Ikr4IuIvzABSpToi6QYHW6/uWE0QKBgQDdStc1sraOXU7y8oYT\nJ4ogHHysvU6rl/HWVqn7grzhUycFpRPgc7/OrNHILBy3UPW6vTVeidm0zpIrkq65\nYtvc6MUHWSUz3XwyKd/U2WHxbgnuEq3RerOkpR+vxseQTECAnASTj273u/dKYXgL\nKeKyWnpZAgoiQd1AJw8dm4nupQKBgQC8dFbSZbo0ZjAhHfgb4+N1U2njz6+2UBZZ\nPNso/3SHPBr/l1EWngtVWeO7N76o5QBqjqYWyyowQoZNbBwfH1vPizyLos4RYIRR\nqsp9WjigfRbfal54ppxccCL1qYIykbIVKrVaxJ1NN8+eGYF68KEGVKcp0bf2K5Zl\nr5zoPzifEQKBgQC6woTqjs8/S0RsCX5aAA60lxYpewNAElZJvI5s86OQzuqp+u3R\nih6gwH2z4HbDx5H7bd/yz4hq7cOy/nJzhxljURen4fZh1VURyQFc07GzXlkHEcCc\ngF/IXotlf+/AunndkM7T8kOG1J4ZqjTzxv/J4k5LfEstKkUd9Vjudexs+QKBgCwS\nzUdRcTXV/EWSe7cSGd0Tj/0uUjrCCif+mobBD6CdBvdljRpMBfyFFERxqg5X2DwT\ndnZ4NzqoJD6xHPaOX+tu9c72WVkpCGkNF2QvmHS4LIQ9nTB8Tq8zroljhkaLWmmm\n3lkHCH7Joa2o62Y0JoSTgbC/ElXpJbhMVNbgCj7xAoGBALHumastWWHhSJ5KPVQk\nmT4NzFCFpgWfXIK7iFC391yzsYhVV6PmrmLHOx97XGyqR0W22CLSPScib/IddJYz\n/Cr8yM3yFUJaswyXis7xRQlLQ+AFKyCfOmzutJaktBPromtJpVS68vU5atfDCOh1\nbcCf3RsVx8D5P2L6PB5jOI7F\n-----END PRIVATE KEY-----\n",
+  "client_email": "carsales@carsales-406310.iam.gserviceaccount.com",
+  "client_id": "111227220454077379414",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/carsales%40carsales-406310.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
