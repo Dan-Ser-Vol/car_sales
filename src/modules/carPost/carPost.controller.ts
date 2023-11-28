@@ -48,7 +48,7 @@ import { CarPostDetailsResponseDto } from './dto/response/carPost-details-respon
 export class CarPostController {
   constructor(private carPostService: CarPostService) {}
 
-  // @RolesDecorator(UserRoleEnum.SELLER, UserRoleEnum.ADMIN, UserRoleEnum.MANAGER)
+  @RolesDecorator(UserRoleEnum.SELLER, UserRoleEnum.ADMIN, UserRoleEnum.MANAGER)
   @ApiOperation({ summary: 'Create new post' })
   @ApiResponse({
     status: 200,
@@ -92,7 +92,7 @@ export class CarPostController {
     }
   }
 
-  // @RolesDecorator(UserRoleEnum.SELLER, UserRoleEnum.ADMIN, UserRoleEnum.MANAGER)
+  @RolesDecorator(UserRoleEnum.SELLER, UserRoleEnum.ADMIN, UserRoleEnum.MANAGER)
   @AccountTypeDecorator(AccountTypeEnum.BASIC)
   @ApiOperation({ summary: 'Add an image to the post' })
   @ApiResponse({
